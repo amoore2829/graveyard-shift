@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRAVEYARD SHIFT — a tale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;font-family:'Courier Prime',monospace}
+a{color:#ff1a1a}
+a:hover{color:#39ff14}
+.marq{white-space:nowrap;animation:marq 16s linear infinite;display:inline-block}
+@keyframes marq{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+.page{min-height:100vh;background:radial-gradient(ellipse at top,#150000 0%,#000 60%);display:flex;justify-content:center;padding:24px 12px}
+.panel{width:920px;max-width:100%;background:#0a0a0a;border:1px solid #3a0000;box-shadow:0 0 60px rgba(255,0,0,.08);height:fit-content}
+.marq-bar{border-bottom:4px solid #ff1a1a;padding:8px 14px;background:#000;overflow:hidden}
+.marq-bar .marq{color:#39ff14;font-size:14px}
+.hero{padding:26px 20px 12px;text-align:center;background:radial-gradient(ellipse at center,#1a0000 0%,#0a0a0a 70%);border-bottom:1px solid #2a0000}
+.site-title{font-family:'Creepster',cursive;font-size:44px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
+.site-title a{color:#ff1a1a;text-decoration:none}
+.tagline{color:#39ff14;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
+nav{display:flex;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;justify-content:center;gap:24px;flex-wrap:wrap}
+nav a{font-size:14px;text-decoration:none}
+.content{padding:24px 22px;max-width:680px;margin:0 auto}
+.post-title{font-family:'Creepster',cursive;font-size:40px;color:#39ff14;line-height:1.1}
+.post-meta{color:#888;font-size:12px;margin-top:8px;border-bottom:1px solid #2a2a2a;padding-bottom:10px}
+.post-body{color:#ccc;font-size:14px;line-height:1.7;margin-top:16px}
+.post-body div{margin-top:12px}
+.backrow{margin-top:26px;border-top:1px dotted #333;padding-top:12px;font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
+.lost{border:2px solid #ff1a1a;padding:20px;text-align:center;margin-top:10px}
+.lost .big{font-family:'Creepster',cursive;font-size:34px;color:#ff1a1a}
+.lost .note{color:#888;font-size:13px;margin-top:8px}
+footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px solid #2a0000}
+@media (max-width:700px){.site-title{font-size:32px}.post-title{font-size:28px}}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="panel">
+<div class="marq-bar"><span class="marq">you are reading a tale from the GRAVEYARD SHIFT archive — do not read alone — the keeper accepts no responsibility for what follows you home</span></div>
+<header class="hero">
+<div class="site-title"><a href="index.html">GRAVEYARD SHIFT</a></div>
+<div class="tagline">a zine for the sleep-deprived and superstitious</div>
+</header>
+<nav>
+<a href="category.html?cat=books">books</a>
+<a href="category.html?cat=creepypasta">creepypasta</a>
+<a href="category.html?cat=movies">movies</a>
+<a href="category.html?cat=video+games">video games</a>
+<a href="index.html#about">about</a>
+<a href="index.html#guestbook" style="color:#39ff14">guestbook</a>
+</nav>
+<div class="content" id="content"></div>
+<footer>© 2026 GRAVEYARD SHIFT — do not read alone. best experienced with the lights off.</footer>
+</div>
+</div>
+<script src="posts.js"></script>
+<script>
+(function () {
+  "use strict";
+  var posts = [];
+  try { posts = JSON.parse(localStorage.getItem("gs_posts") || "null") || []; }
+  catch (e) { posts = []; }
+  if (!posts.length && window.GS_POSTS) posts = window.GS_POSTS;
+
+  var id = new URLSearchParams(location.search).get("id");
+  var post = null;
+  posts.forEach(function (p) { if (String(p.id) === String(id)) post = p; });
+
+  var c = document.getElementById("content");
+  if (!post) {
+    var lost = document.createElement("div");
+    lost.className = "lost";
+    var big = document.createElement("div"); big.className = "big";
+    big.textContent = "THIS TALE WAS NEVER BURIED";
+    var note = document.createElement("div"); note.className = "note";
+    note.textContent = "either the keeper un-buried it, or it never existed. spooky. ";
+    var back = document.createElement("a"); back.href = "index.html";
+    back.textContent = "← flee to the homepage";
+    lost.appendChild(big); lost.appendChild(note); note.appendChild(back);
+    c.appendChild(lost);
+    return;
+  }
+
+  document.title = "GRAVEYARD SHIFT — " + post.title;
+  var t = document.createElement("div"); t.className = "post-title";
+  t.textContent = post.title.toUpperCase();
+  var m = document.createElement("div"); m.className = "post-meta";
+  m.textContent = "by the keeper · " + post.date + " · filed under ";
+  var catlink = document.createElement("a");
+  catlink.href = "category.html?cat=" + encodeURIComponent((post.cat || "").toLowerCase());
+  catlink.textContent = post.cat;
+  m.appendChild(catlink);
+  var b = document.createElement("div"); b.className = "post-body";
+  String(post.body).split(/\n\s*\n/).forEach(function (para) {
+    var p = document.createElement("div");
+    p.textContent = para;
+    b.appendChild(p);
+  });
+  var back = document.createElement("div"); back.className = "backrow";
+  var a1 = document.createElement("a"); a1.href = "index.html"; a1.textContent = "← back to the graveyard";
+  var a2 = document.createElement("a"); a2.href = "category.html?cat=" + encodeURIComponent((post.cat || "").toLowerCase());
+  a2.textContent = "more " + post.cat + " →";
+  back.appendChild(a1); back.appendChild(a2);
+  c.appendChild(t); c.appendChild(m); c.appendChild(b); c.appendChild(back);
+})();
+</script>
+</body>
+</html>

@@ -49,8 +49,8 @@ nav a{font-size:14px;text-decoration:none}
 .post-row a{font-size:14px;text-decoration:none}
 .post-row span{color:#666;font-size:12px}
 
-.cat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.cat-card{border:1px solid #39ff14;padding:12px;text-align:center}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat-card{border:1px solid #39ff14;padding:12px;text-align:center;display:block;text-decoration:none}
 .cat-name{color:#ff1a1a;font-family:'Creepster',cursive;font-size:18px}
 .cat-sub{color:#888;font-size:11px;margin-top:4px}
 
@@ -116,9 +116,10 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
 </header>
 
 <nav>
-<a href="#">urban legends</a>
-<a href="#">creepypasta</a>
-<a href="#">reviews</a>
+<a href="category.html?cat=books">books</a>
+<a href="category.html?cat=creepypasta">creepypasta</a>
+<a href="category.html?cat=movies">movies</a>
+<a href="category.html?cat=video+games">video games</a>
 <a href="#about">about</a>
 <a href="#guestbook" style="color:#39ff14">guestbook</a>
 </nav>
@@ -147,9 +148,10 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
 <section style="margin-top:26px">
 <div class="section-head" style="margin-bottom:14px">◆ CATEGORIES ◆</div>
 <div class="cat-grid">
-<div class="cat-card"><div class="cat-name">Urban Legends</div><div class="cat-sub">local dread, retold</div></div>
-<div class="cat-card"><div class="cat-name">Creepypasta</div><div class="cat-sub">copy-pasted nightmares</div></div>
-<div class="cat-card"><div class="cat-name">Reviews</div><div class="cat-sub">films, tapes, tales</div></div>
+<a class="cat-card" href="category.html?cat=books"><div class="cat-name">Books</div><div class="cat-sub">tomes that bite back</div></a>
+<a class="cat-card" href="category.html?cat=creepypasta"><div class="cat-name">Creepypasta</div><div class="cat-sub">copy-pasted nightmares</div></a>
+<a class="cat-card" href="category.html?cat=movies"><div class="cat-name">Movies</div><div class="cat-sub">films best watched through your fingers</div></a>
+<a class="cat-card" href="category.html?cat=video+games"><div class="cat-name">Video Games</div><div class="cat-sub">haunted cartridges &amp; cursed saves</div></a>
 </div>
 </section>
 
@@ -182,7 +184,7 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
 
 <div class="construction">
 <div class="construction-label">🕯 SECTION UNDER CONSTRUCTION 🕯</div>
-<div class="stripe-img" style="height:60px;margin-top:8px">gif: digging construction worker</div>
+<img src="assets/resetti.gif" alt="a mole, digging" style="height:60px;margin-top:8px;image-rendering:pixelated">
 </div>
 
 <div class="midi">
@@ -295,8 +297,13 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
       p.textContent = para;
       body.appendChild(p);
     });
-    document.getElementById("featured-meta").textContent =
-      "by the keeper · " + post.date + " · " + post.cat + " · fresh from the crypt";
+    var fm = document.getElementById("featured-meta");
+    fm.textContent = "by the keeper · " + post.date + " · " + post.cat + " · ";
+    var more = document.createElement("a");
+    more.href = "post.html?id=" + encodeURIComponent(post.id);
+    more.style.fontSize = "12px";
+    more.textContent = "read more →";
+    fm.appendChild(more);
   }
 
   if (posts.length) {
@@ -306,13 +313,8 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
       var row = document.createElement("div");
       row.className = "post-row";
       var link = document.createElement("a");
-      link.href = "#";
+      link.href = "post.html?id=" + encodeURIComponent(post.id);
       link.textContent = post.title;
-      link.addEventListener("click", function (e) {
-        e.preventDefault();
-        featurePost(post);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
       var meta = document.createElement("span");
       meta.textContent = post.cat + " · " + post.date;
       row.appendChild(link);
