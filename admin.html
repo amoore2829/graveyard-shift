@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KEEPER'S CONTROL PANEL — restricted area</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gs.css">
+<style>
+.panel{height:fit-content}
+.panel-title{font-family:'Creepster',cursive;font-size:52px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
+input,textarea,select{border:1px solid #444;background:#050505;color:#ccc;font-family:'Courier Prime',monospace;font-size:13px;padding:8px;box-sizing:border-box}
+input:focus,textarea:focus,select:focus{outline:1px solid #39ff14}
+textarea{resize:vertical;min-height:160px;line-height:1.6}
+label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4px}
+.btn{cursor:pointer;border:1px solid #39ff14;background:none;color:#39ff14;font-family:'Courier Prime',monospace;font-size:12px;padding:8px 14px;text-align:center;white-space:nowrap}
+.btn:hover{background:#0f1a0d}
+.btn.red{border-color:#ff1a1a;color:#ff1a1a}
+.btn.red:hover{background:#1a0505}
+.btn.grey{border-color:#555;color:#888}
+.btn.grey:hover{background:#151515}
+
+.gate{max-width:420px;margin:40px auto;border:2px solid #ff1a1a;padding:20px;text-align:center}
+.gate input{width:100%;text-align:center;margin-top:8px}
+.gate .btn{width:100%;margin-top:10px}
+.gate-err{color:#ff1a1a;font-size:12px;margin-top:10px;min-height:16px}
+
+.deck{display:grid;grid-template-columns:2fr 1fr;gap:22px;padding:24px 22px}
+@media (max-width:820px){.deck{grid-template-columns:1fr}.panel-title{font-size:38px}}
+
+.compose{border:2px solid #39ff14;padding:16px;display:flex;flex-direction:column;gap:12px}
+.compose.editing{border-color:#ffb700}
+.compose-row{display:flex;gap:12px;flex-wrap:wrap}
+.compose-row > div{flex:1;min-width:130px}
+.compose input,.compose select,.compose textarea{width:100%}
+.grp{border:1px dashed #444;padding:12px;display:flex;flex-direction:column;gap:10px}
+.grp-label{color:#39ff14;font-family:'Special Elite',monospace;font-size:11px;letter-spacing:2px}
+.grp.pick .grp-label{color:#ffb700}
+.checkrow{display:flex;align-items:center;gap:8px;color:#888;font-size:12px}
+.checkrow input{width:auto}
+
+.msg{font-size:12px;min-height:16px;line-height:1.6}
+.msg.err{color:#ff1a1a}
+.msg.ok{color:#39ff14}
+.msg.warn{color:#ffb700}
+
+.postrow{border-bottom:1px dotted #333;padding:10px 0;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.postrow:last-child{border-bottom:none}
+.postrow.is-draft{opacity:.6}
+.postrow .t{color:#ff1a1a;font-size:13px}
+.postrow .m{color:#666;font-size:11px;margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rowbtns{display:flex;gap:6px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.mini{cursor:pointer;background:none;font-family:'Courier Prime',monospace;font-size:11px;padding:4px 8px;border:1px solid #444;color:#888}
+.mini:hover{border-color:#39ff14;color:#39ff14}
+.mini.red{border-color:#ff1a1a;color:#ff1a1a}
+.mini.red:hover{background:#1a0505}
+
+.statbox{border:1px solid #39ff14;padding:12px;text-align:center}
+.statbox .l{color:#39ff14;font-size:11px;letter-spacing:1px}
+.statbox .v{background:#000;color:#ff1a1a;font-family:'VT323',monospace;font-size:30px;letter-spacing:5px;margin-top:4px;padding:4px}
+.notebox{border:1px dashed #444;padding:12px;color:#888;font-size:11px;line-height:1.6}
+.badge{font-size:10px;text-align:center;padding:6px;border:1px solid #39ff14;color:#39ff14}
+
+.dirty{border:1px solid #ffb700;background:#1a1400;color:#ffb700;padding:10px 12px;font-size:12px;line-height:1.6}
+.clean{border:1px solid #39ff14;color:#39ff14;padding:10px 12px;font-size:12px}
+
+.toolbar{display:flex;justify-content:space-between;gap:10px;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;font-size:12px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="page">
+<div class="panel">
+
+<div class="marq-bar">
+<span class="marq">⚠ RESTRICTED AREA ⚠ authorized keepers only — trespassers will be haunted — this incident has been reported to the spirits — ⚠ RESTRICTED AREA ⚠</span>
+</div>
+
+<header class="hero">
+<div class="panel-title">KEEPER'S CONTROL PANEL</div>
+<div class="tagline">webmaster access — est. 2026 — powered by candlelight</div>
+</header>
+
+<!-- ============ LOGIN GATE ============ -->
+<div id="gate-setup" class="gate hidden">
+<div class="section-head" style="text-align:center">◆ FIRST SEANCE ◆</div>
+<div style="color:#ccc;font-size:12px;line-height:1.6">No secret word is bound to this crypt yet. Choose one, keeper — you will need it every time you return.</div>
+<input id="setup-pass" type="password" placeholder="choose a secret word">
+<input id="setup-pass2" type="password" placeholder="whisper it again">
+<button class="btn" id="setup-btn" type="button">BIND THE WORD →</button>
+<div class="gate-err" id="setup-err"></div>
+</div>
+
+<div id="gate-login" class="gate hidden">
+<div class="section-head" style="text-align:center">◆ KEEPER'S DOOR ◆</div>
+<div style="color:#ccc;font-size:12px">🔐 speak the secret word and enter</div>
+<input id="login-pass" type="password" placeholder="secret word">
+<button class="btn" id="login-btn" type="button">ENTER THE CRYPT →</button>
+<div class="gate-err" id="login-err"></div>
+<div style="color:#555;font-size:10px;margin-top:12px">forgot it? see the notes inside — or ask the spirits (they won't tell)</div>
+</div>
+
+<!-- ============ ADMIN DECK ============ -->
+<div id="deck" class="hidden">
+
+<div class="toolbar">
+<a href="index.html" style="text-decoration:none">← back to the graveyard</a>
+<span style="color:#39ff14">☠ signed in as <b>the keeper</b></span>
+<a href="#" id="logout" style="text-decoration:none;color:#39ff14">log out →</a>
+</div>
+
+<div class="deck">
+
+<main>
+<div class="compose" id="compose">
+<div class="section-head" style="margin-bottom:0" id="compose-head">◆ RAISE A NEW POST <span class="blinker" style="color:#ff1a1a">▮</span> ◆</div>
+
+<div class="compose-row">
+<div style="flex:2">
+<label>TITLE</label>
+<input id="p-title" maxlength="140" placeholder="e.g. House of Leaves">
+</div>
+<div>
+<label>KIND OF POST</label>
+<select id="p-type">
+<option value="review">review — something I rated</option>
+<option value="pick">pick — someone else's story</option>
+<option value="post">post — my own writing</option>
+</select>
+</div>
+</div>
+
+<div class="compose-row">
+<div>
+<label>SECTION</label>
+<select id="p-cat">
+<option value="books">books</option>
+<option value="creepypasta">creepypasta</option>
+<option value="movies">movies</option>
+<option value="video games">video games</option>
+</select>
+</div>
+<div>
+<label>DATE</label>
+<input id="p-date" type="date">
+</div>
+<div>
+<label>COVER IMAGE (optional)</label>
+<input id="p-image" placeholder="assets/covers/hol.jpg">
+</div>
+</div>
+
+<!-- review-only fields -->
+<div class="grp hidden" id="grp-review">
+<div class="grp-label">◆ THE VERDICT ◆</div>
+<div class="compose-row">
+<div style="flex:2">
+<label>AUTHOR / DIRECTOR / STUDIO</label>
+<input id="w-creator" maxlength="120" placeholder="Mark Z. Danielewski">
+</div>
+<div>
+<label>YEAR</label>
+<input id="w-year" type="number" min="1000" max="2999" placeholder="2000">
+</div>
+<div>
+<label>RATING</label>
+<select id="w-rating">
+<option value="">no rating</option>
+<option value="5">★★★★★ 5</option>
+<option value="4.5">★★★★½ 4.5</option>
+<option value="4">★★★★ 4</option>
+<option value="3.5">★★★½ 3.5</option>
+<option value="3">★★★ 3</option>
+<option value="2.5">★★½ 2.5</option>
+<option value="2">★★ 2</option>
+<option value="1.5">★½ 1.5</option>
+<option value="1">★ 1</option>
+<option value="0.5">½ 0.5</option>
+</select>
+</div>
+</div>
+<div>
+<label>ONE-LINE VERDICT</label>
+<input id="w-verdict" maxlength="160" placeholder="the book that made me afraid of hallways">
+</div>
+</div>
+
+<!-- pick-only fields -->
+<div class="grp pick hidden" id="grp-pick">
+<div class="grp-label">◆ CREDIT THE ORIGINAL ◆</div>
+<div class="compose-row">
+<div>
+<label>ORIGINAL AUTHOR (required)</label>
+<input id="s-author" maxlength="120" placeholder="Ted the Caver">
+</div>
+<div style="flex:2">
+<label>LINK TO THE ORIGINAL</label>
+<input id="s-url" placeholder="https://...">
+</div>
+</div>
+</div>
+
+<div>
+<label id="body-label">THE TALE ITSELF</label>
+<textarea id="p-body" placeholder="it was a dark and stormy night... (blank line = new paragraph)"></textarea>
+</div>
+
+<div class="checkrow">
+<input type="checkbox" id="p-draft">
+<label for="p-draft" style="margin:0">keep as draft (hidden from the public site)</label>
+</div>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" id="save" type="button">⚰ BURY THIS TALE →</button>
+<button class="btn grey hidden" id="cancel" type="button">cancel edit</button>
+<a class="btn grey hidden" id="preview" href="#" target="_blank" style="text-decoration:none">preview ↗</a>
+</div>
+<div class="msg" id="save-msg"></div>
+</div>
+
+<div style="margin-top:26px">
+<div class="section-head">◆ YOUR BURIED POSTS ◆</div>
+<div id="post-list"></div>
+<div id="no-posts" style="color:#666;font-size:12px">nothing buried yet. the graveyard awaits your first tale.</div>
+</div>
+
+<div style="margin-top:26px;border:1px dashed #39ff14;padding:16px">
+<div class="section-head">◆ PUBLISH TO THE PUBLIC GRAVEYARD ◆</div>
+<div id="sync-state" style="margin-bottom:12px"></div>
+<div style="color:#888;font-size:12px;line-height:1.6;margin-bottom:10px">
+Edits live in this browser until you write them to <span style="color:#39ff14">content/posts.js</span>.
+That file is the real source of truth — once saved and committed, your writing is in git and safe.
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn" id="export-gen" type="button">⚱ GENERATE content/posts.js →</button>
+<button class="btn grey" id="revert" type="button">↺ discard local edits</button>
+</div>
+<div id="export-wrap" class="hidden" style="margin-top:12px">
+<textarea id="export-out" readonly style="width:100%;height:160px;font-size:11px"></textarea>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+<button class="btn" id="export-copy" type="button">📋 COPY IT</button>
+<button class="btn" id="export-dl" type="button">💾 DOWNLOAD posts.js</button>
+</div>
+<div class="msg ok" id="export-msg" style="margin-top:6px"></div>
+</div>
+</div>
+</main>
+
+<aside class="sidebar">
+<div class="statbox">
+<div class="l">POSTS RAISED</div>
+<div class="v" id="stat-posts">000000</div>
+</div>
+<div class="statbox">
+<div class="l">DRAFTS PENDING</div>
+<div class="v" id="stat-drafts">000000</div>
+</div>
+<div class="statbox">
+<div class="l">AVERAGE VERDICT</div>
+<div class="v" id="stat-avg">—</div>
+</div>
+<div class="badge">ADMIN PANEL v0.3<br>hand-coded in Notepad</div>
+<div class="notebox">
+<b style="color:#ff1a1a">KEEPER'S NOTES:</b><br>
+· newest post is auto-featured on the homepage<br>
+· edits stay in this browser until you generate <b>content/posts.js</b> and save it<br>
+· drafts are visible to you locally, never on the live site<br>
+· 🔥 deletes a post — no undo<br>
+· forgot the secret word? delete the "gs_secret" key in DevTools → Application → Local Storage, then bind a new one
+</div>
+<div class="notebox" style="border-color:#3a0000">
+<b style="color:#ff1a1a">NOT REAL SECURITY:</b><br>
+this lock is period-appropriate theatre. the secret word is only lightly obfuscated in your browser. it keeps honest people out of a local file — nothing more. admin.html is never deployed.
+</div>
+</aside>
+
+</div>
+</div>
+
+<footer>© 2026 GRAVEYARD SHIFT — keeper's entrance. wipe your feet on the way out.</footer>
+
+</div>
+</div>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
+<script src="assets/admin-core.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var A = window.AdminCore;
+  var enc = function (s) { return btoa(unescape(encodeURIComponent(s))); };
+
+  /* ---------- state ----------
+     BASELINE = what content/posts.js currently contains (the published truth).
+     working  = BASELINE + your local edits, held in localStorage under the
+                same key gs.js reads for local preview.                        */
+  var BASELINE = A.migrate(window.GS_POSTS || []);
+  var working  = [];
+  var editingId = null;
+
+  function loadWorking() {
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem("gs_posts") || "null"); }
+    catch (e) { stored = null; }
+    working = stored ? A.migrate(stored) : BASELINE.slice();
+  }
+  function saveWorking() {
+    try { localStorage.setItem("gs_posts", JSON.stringify(working)); }
+    catch (e) { /* storage full or blocked — the export button still works */ }
+  }
+
+  function show(id) {
+    ["gate-setup", "gate-login", "deck"].forEach(function (s) {
+      $(s).classList.toggle("hidden", s !== id);
+    });
+  }
+
+  /* ---------- gate ---------- */
+  var secret = localStorage.getItem("gs_secret");
+  if (sessionStorage.getItem("gs_keeper") === "1" && secret) { show("deck"); boot(); }
+  else if (!secret) { show("gate-setup"); }
+  else { show("gate-login"); }
+
+  $("setup-btn").addEventListener("click", function () {
+    var a = $("setup-pass").value, b = $("setup-pass2").value;
+    if (a.length < 3) { $("setup-err").textContent = "the spirits demand at least 3 characters."; return; }
+    if (a !== b) { $("setup-err").textContent = "the whispers do not match. try again."; return; }
+    localStorage.setItem("gs_secret", enc(a));
+    sessionStorage.setItem("gs_keeper", "1");
+    show("deck"); boot();
+  });
+
+  function tryLogin() {
+    if (enc($("login-pass").value) === localStorage.getItem("gs_secret")) {
+      sessionStorage.setItem("gs_keeper", "1");
+      $("login-pass").value = "";
+      show("deck"); boot();
+    } else {
+      $("login-err").textContent = "☠ THE SPIRITS REJECT YOU. (wrong secret word)";
+      $("login-err").classList.add("blinker");
+      setTimeout(function () { $("login-err").classList.remove("blinker"); }, 2000);
+    }
+  }
+  $("login-btn").addEventListener("click", tryLogin);
+  $("login-pass").addEventListener("keydown", function (e) { if (e.key === "Enter") tryLogin(); });
+  $("setup-pass2").addEventListener("keydown", function (e) { if (e.key === "Enter") $("setup-btn").click(); });
+
+  $("logout").addEventListener("click", function (e) {
+    e.preventDefault();
+    sessionStorage.removeItem("gs_keeper");
+    show("gate-login");
+  });
+
+  /* ---------- form ---------- */
+  function syncTypeFields() {
+    var t = $("p-type").value;
+    $("grp-review").classList.toggle("hidden", t !== "review");
+    $("grp-pick").classList.toggle("hidden", t !== "pick");
+    $("body-label").textContent =
+      t === "review" ? "WHY — THE REVIEW ITSELF" :
+      t === "pick"   ? "WHY THIS ONE STUCK WITH YOU" :
+                       "THE TALE ITSELF";
+  }
+  $("p-type").addEventListener("change", syncTypeFields);
+
+  function readForm() {
+    return A.normalize({
+      id:    editingId,
+      type:  $("p-type").value,
+      cat:   $("p-cat").value,
+      title: $("p-title").value,
+      date:  $("p-date").value,
+      image: $("p-image").value,
+      draft: $("p-draft").checked,
+      body:  $("p-body").value,
+      work:   { creator: $("w-creator").value, year: $("w-year").value,
+                rating: $("w-rating").value, verdict: $("w-verdict").value },
+      source: { author: $("s-author").value, url: $("s-url").value }
+    }, working.map(function (p) { return p.id; }));
+  }
+
+  function clearForm() {
+    editingId = null;
+    ["p-title", "p-image", "p-body", "w-creator", "w-year", "w-verdict", "s-author", "s-url"]
+      .forEach(function (id) { $(id).value = ""; });
+    $("w-rating").value = "";
+    $("p-draft").checked = false;
+    $("p-date").value = A.todayISO();
+    $("p-type").value = "review";
+    $("compose").classList.remove("editing");
+    $("compose-head").innerHTML = '◆ RAISE A NEW POST <span class="blinker" style="color:#ff1a1a">▮</span> ◆';
+    $("save").textContent = "⚰ BURY THIS TALE →";
+    $("cancel").classList.add("hidden");
+    $("preview").classList.add("hidden");
+    $("save-msg").textContent = "";
+    syncTypeFields();
+  }
+
+  function loadForm(post) {
+    editingId = post.id;
+    $("p-title").value = post.title;
+    $("p-type").value  = post.type;
+    $("p-cat").value   = post.cat;
+    $("p-date").value  = post.date;
+    $("p-image").value = post.image || "";
+    $("p-body").value  = post.body;
+    $("p-draft").checked = !!post.draft;
+    var w = post.work || {}, s = post.source || {};
+    $("w-creator").value = w.creator || "";
+    $("w-year").value    = w.year != null ? w.year : "";
+    $("w-rating").value  = w.rating != null ? String(w.rating) : "";
+    $("w-verdict").value = w.verdict || "";
+    $("s-author").value  = s.author || "";
+    $("s-url").value     = s.url || "";
+    $("compose").classList.add("editing");
+    $("compose-head").textContent = "◆ EDITING: " + post.title + " ◆";
+    $("save").textContent = "✎ SAVE CHANGES →";
+    $("cancel").classList.remove("hidden");
+    var pv = $("preview");
+    pv.href = "post.html?id=" + encodeURIComponent(post.id);
+    pv.classList.remove("hidden");
+    $("save-msg").textContent = "";
+    syncTypeFields();
+    $("compose").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  $("cancel").addEventListener("click", clearForm);
+
+  $("save").addEventListener("click", function () {
+    var post = readForm();
+    var result = A.validate(post);
+    var msg = $("save-msg");
+
+    if (!result.ok) {
+      msg.className = "msg err";
+      msg.textContent = "☠ " + result.errors.join("  ");
+      return;
+    }
+
+    working = A.upsert(working, post);
+    saveWorking();
+    var wasEditing = editingId !== null;
+    clearForm();
+    render();
+
+    msg.className = result.warnings.length ? "msg warn" : "msg ok";
+    msg.textContent = (wasEditing ? "✎ changes saved locally." : "⚰ buried locally.") +
+      (result.warnings.length ? "  note: " + result.warnings.join("  ") : "") +
+      "  — generate content/posts.js below to publish.";
+  });
+
+  /* ---------- list ---------- */
+  function render() {
+    var list = $("post-list");
+    list.textContent = "";
+    $("no-posts").classList.toggle("hidden", working.length > 0);
+
+    var drafts = working.filter(function (p) { return p.draft; }).length;
+    $("stat-posts").textContent = String(working.length).padStart(6, "0");
+    $("stat-drafts").textContent = String(drafts).padStart(6, "0");
+
+    var rated = working.filter(function (p) {
+      return p.type === "review" && p.work && p.work.rating;
+    });
+    $("stat-avg").textContent = rated.length
+      ? (rated.reduce(function (s, p) { return s + p.work.rating; }, 0) / rated.length).toFixed(1)
+      : "—";
+
+    A.sortNewest(working).forEach(function (post) {
+      var row = document.createElement("div");
+      row.className = "postrow" + (post.draft ? " is-draft" : "");
+
+      var left = document.createElement("div");
+      var t = document.createElement("div");
+      t.className = "t";
+      t.textContent = post.title;
+      left.appendChild(t);
+
+      var m = document.createElement("div");
+      m.className = "m";
+      var tag = document.createElement("span");
+      tag.className = "type-tag " + post.type;
+      tag.textContent = post.type.toUpperCase();
+      m.appendChild(tag);
+      m.appendChild(document.createTextNode(post.cat + " · " + post.date));
+      if (post.type === "review" && post.work && post.work.rating) {
+        m.appendChild(GS.stars(post.work.rating));
+      }
+      if (post.draft) {
+        var d = document.createElement("span");
+        d.style.color = "#ffb700";
+        d.textContent = "DRAFT";
+        m.appendChild(d);
+      }
+      left.appendChild(m);
+
+      var btns = document.createElement("div");
+      btns.className = "rowbtns";
+
+      var edit = document.createElement("button");
+      edit.className = "mini"; edit.type = "button"; edit.textContent = "✎ edit";
+      edit.addEventListener("click", function () { loadForm(post); });
+
+      var toggle = document.createElement("button");
+      toggle.className = "mini"; toggle.type = "button";
+      toggle.textContent = post.draft ? "▲ publish" : "▼ to draft";
+      toggle.addEventListener("click", function () {
+        post.draft = !post.draft;
+        working = A.upsert(working, post);
+        saveWorking(); render();
+      });
+
+      var burn = document.createElement("button");
+      burn.className = "mini red"; burn.type = "button"; burn.textContent = "🔥 burn";
+      burn.addEventListener("click", function () {
+        if (!confirm('Delete "' + post.title + '" forever?')) return;
+        working = A.remove(working, post.id);
+        if (editingId === post.id) clearForm();
+        saveWorking(); render();
+      });
+
+      btns.appendChild(edit); btns.appendChild(toggle); btns.appendChild(burn);
+      row.appendChild(left); row.appendChild(btns);
+      list.appendChild(row);
+    });
+
+    renderSync();
+  }
+
+  /* ---------- published-vs-local state ---------- */
+  function renderSync() {
+    var host = $("sync-state");
+    host.textContent = "";
+    var clean = A.same(working, BASELINE);
+    var box = document.createElement("div");
+    box.className = clean ? "clean" : "dirty";
+    box.textContent = clean
+      ? "✓ in sync — content/posts.js matches what's in this browser."
+      : "⚠ unsaved changes — this browser has edits that aren't in content/posts.js yet.";
+    host.appendChild(box);
+    $("revert").classList.toggle("hidden", clean);
+  }
+
+  $("revert").addEventListener("click", function () {
+    if (!confirm("Discard all local edits and go back to what's in content/posts.js?")) return;
+    working = BASELINE.slice();
+    saveWorking(); clearForm(); render();
+  });
+
+  /* ---------- export ---------- */
+  $("export-gen").addEventListener("click", function () {
+    $("export-out").value = A.serialize(working);
+    $("export-wrap").classList.remove("hidden");
+    $("export-msg").textContent = "save this over content/posts.js, then commit it.";
+  });
+  $("export-copy").addEventListener("click", function () {
+    var out = $("export-out");
+    out.select();
+    var done = function () { $("export-msg").textContent = "📋 copied — paste it into content/posts.js."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out.value).then(done, function () { document.execCommand("copy"); done(); });
+    } else { document.execCommand("copy"); done(); }
+  });
+  $("export-dl").addEventListener("click", function () {
+    var blob = new Blob([$("export-out").value], { type: "text/javascript" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "posts.js";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    $("export-msg").textContent = "💾 downloaded — save it over content/posts.js, then commit.";
+  });
+
+  /* ---------- boot ---------- */
+  function boot() {
+    loadWorking();
+    clearForm();
+    render();
+  }
+})();
+</script>
+</body>
+</html>
