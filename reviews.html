@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRAVEYARD SHIFT — everything I've rated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gs.css">
+</head>
+<body>
+<div class="page">
+<div class="panel">
+
+<div id="gs-shell"></div>
+
+<div class="content">
+<div class="page-title">◆ THE VERDICTS ◆</div>
+<div class="page-sub">every book, film, and game I've put a number on</div>
+
+<div class="controls" id="controls">
+<select id="f-cat">
+<option value="">everything rated</option>
+</select>
+<select id="f-min">
+<option value="0">any rating</option>
+<option value="5">5 stars only</option>
+<option value="4">4 stars and up</option>
+<option value="3">3 stars and up</option>
+</select>
+<select id="f-sort">
+<option value="rating">highest rated</option>
+<option value="worst">lowest rated</option>
+<option value="newest">most recent</option>
+<option value="title">by title</option>
+</select>
+</div>
+
+<div class="result-count" id="count"></div>
+<div class="card-list" id="results"></div>
+<div id="empty"></div>
+</div>
+
+<div id="gs-footer"></div>
+
+</div>
+</div>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
+<script>
+(function () {
+  "use strict";
+  GS.boot({ here: "reviews", marquee: "the verdicts — stars given, grudges held, opinions final until they aren't" });
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  var all = GS.posts().filter(function (p) {
+    return p.type === "review" && p.work && Number(p.work.rating) > 0;
+  });
+
+  var results = $("results");
+
+  if (!all.length) {
+    $("controls").classList.add("hidden");
+    $("count").classList.add("hidden");
+    $("empty").appendChild(GS.emptyState(
+      "NO VERDICTS YET",
+      "Nothing has been rated. Publish a post with type \"review\" and a star rating and it will show up here, " +
+      "ranked against everything else you've judged."));
+    return;
+  }
+
+  /* only offer sections that actually contain rated reviews */
+  var catSel = $("f-cat");
+  Object.keys(GS.CATS).forEach(function (key) {
+    var n = all.filter(function (p) { return String(p.cat || "").toLowerCase() === key; }).length;
+    if (!n) return;
+    var o = document.createElement("option");
+    o.value = key;
+    o.textContent = GS.CATS[key].title.toLowerCase() + " (" + n + ")";
+    catSel.appendChild(o);
+  });
+
+  var minSel = $("f-min"), sortSel = $("f-sort");
+
+  function render() {
+    var min = Number(minSel.value);
+    var shown = all.filter(function (p) {
+      if (catSel.value && String(p.cat || "").toLowerCase() !== catSel.value) return false;
+      return Number(p.work.rating) >= min;
+    });
+
+    var mode = sortSel.value;
+    shown = shown.slice().sort(function (a, b) {
+      if (mode === "worst")  return Number(a.work.rating) - Number(b.work.rating);
+      if (mode === "newest") return a.date < b.date ? 1 : -1;
+      if (mode === "title")  return a.title.localeCompare(b.title);
+      /* highest rated, ties broken by recency */
+      var d = Number(b.work.rating) - Number(a.work.rating);
+      return d !== 0 ? d : (a.date < b.date ? 1 : -1);
+    });
+
+    var avg = shown.length
+      ? (shown.reduce(function (s, p) { return s + Number(p.work.rating); }, 0) / shown.length).toFixed(1)
+      : "—";
+
+    $("count").textContent = shown.length + (shown.length === 1 ? " verdict" : " verdicts") +
+                             (shown.length ? " · average " + avg + "/5" : "");
+
+    results.textContent = "";
+    if (!shown.length) {
+      results.appendChild(GS.el("div", "gb-empty", "nothing that good (or that bad) yet."));
+      return;
+    }
+    shown.forEach(function (p) { results.appendChild(GS.card(p)); });
+  }
+
+  catSel.addEventListener("change", render);
+  minSel.addEventListener("change", render);
+  sortSel.addEventListener("change", render);
+  render();
+})();
+</script>
+</body>
+</html>

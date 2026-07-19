@@ -1,0 +1,198 @@
+/* ============================================================
+   GRAVEYARD SHIFT — shared stylesheet
+   Design tokens per the handoff. No border-radius anywhere:
+   sharp corners are era-authentic and intentional.
+   ============================================================ */
+
+/* ---- base ---- */
+body{margin:0;background:#000;font-family:'Courier Prime',monospace}
+a{color:#ff1a1a}
+a:hover{color:#39ff14}
+.hidden{display:none !important}
+
+/* ---- retro utilities ---- */
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+.blinker{animation:blink 1s step-start infinite}
+
+.marq{white-space:nowrap;animation:marq 16s linear infinite;display:inline-block}
+@keyframes marq{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+
+.stripe-img{background:repeating-linear-gradient(45deg,#1a0000 0 12px,#240000 12px 24px);display:flex;align-items:center;justify-content:center;color:#8a8a8a;font:13px/1.5 'Courier Prime',monospace;text-align:center;padding:10px;box-sizing:border-box}
+
+/* ---- shell ---- */
+.page{min-height:100vh;background:radial-gradient(ellipse at top,#150000 0%,#000 60%);display:flex;justify-content:center;padding:24px 12px}
+.panel{width:920px;max-width:100%;background:#0a0a0a;border:1px solid #3a0000;box-shadow:0 0 60px rgba(255,0,0,.08);height:fit-content}
+
+.marq-bar{border-bottom:4px solid #ff1a1a;padding:8px 14px;background:#000;overflow:hidden}
+.marq-bar .marq{color:#39ff14;font-size:14px}
+
+.hero{padding:26px 20px 12px;text-align:center;background:radial-gradient(ellipse at center,#1a0000 0%,#0a0a0a 70%);border-bottom:1px solid #2a0000}
+.hero.big{padding:40px 20px 16px}
+.site-title{font-family:'Creepster',cursive;font-size:44px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
+.hero.big .site-title{font-size:80px}
+.site-title a{color:#ff1a1a;text-decoration:none}
+.tagline{color:#39ff14;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
+.hero.big .tagline{font-size:15px;margin-top:6px}
+
+nav{display:flex;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;justify-content:center;gap:22px;flex-wrap:wrap}
+nav a{font-size:14px;text-decoration:none}
+nav a.here{color:#39ff14;border-bottom:1px solid #39ff14}
+
+footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px solid #2a0000}
+
+/* ---- preview banner (local drafts, dev only) ---- */
+.preview-bar{background:#1a1400;border-bottom:1px solid #ffb700;color:#ffb700;font-size:11px;padding:6px 14px;text-align:center;letter-spacing:1px}
+
+/* ---- layout ---- */
+.content{padding:24px 22px}
+.content.narrow{max-width:680px;margin:0 auto}
+.body-grid{display:grid;grid-template-columns:2fr 1fr;gap:22px;padding:24px 22px}
+
+.section-head{color:#39ff14;font-family:'Special Elite',monospace;font-size:14px;border-bottom:1px solid #2a2a2a;padding-bottom:6px;margin-bottom:12px}
+.page-title{font-family:'Creepster',cursive;font-size:40px;color:#39ff14;line-height:1}
+.page-sub{color:#888;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:1px;margin-top:4px;margin-bottom:18px}
+
+/* ---- featured card ---- */
+.featured{border:2px solid #ff1a1a;padding:16px}
+.featured-title{font-family:'Creepster',cursive;font-size:34px;color:#39ff14;margin-top:14px;line-height:1.1}
+.featured-title a{color:#39ff14;text-decoration:none}
+.featured-title a:hover{color:#ff1a1a}
+.featured-body{color:#ccc;font-size:14px;line-height:1.6;margin-top:8px}
+.featured-meta{color:#888;font-size:12px;margin-top:10px}
+.featured-meta a{font-size:12px}
+
+/* ---- compact post rows ---- */
+.post-list{display:flex;flex-direction:column;gap:12px}
+.post-row{border-bottom:1px dotted #333;padding-bottom:10px;display:flex;justify-content:space-between;gap:10px}
+.post-row:last-child{border-bottom:none;padding-bottom:0}
+.post-row a{font-size:14px;text-decoration:none}
+.post-row span{color:#666;font-size:12px;white-space:nowrap}
+
+/* ---- typed cards (category / archive / reviews) ---- */
+.card-list{display:flex;flex-direction:column;gap:14px;margin-top:14px}
+.card{border:1px solid #333;padding:14px;display:flex;gap:14px}
+.card:hover{border-color:#ff1a1a}
+.card-thumb{width:64px;height:92px;flex:none;font-size:10px}
+.card-main{flex:1;min-width:0}
+.card-title{font-size:16px;text-decoration:none;display:inline-block}
+.card-sub{color:#888;font-size:12px;margin-top:3px}
+.card-verdict{color:#ccc;font-size:13px;font-style:italic;margin-top:8px;line-height:1.5}
+.card-meta{color:#666;font-size:11px;margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.type-tag{font-size:9px;letter-spacing:1px;border:1px solid currentColor;padding:2px 5px}
+.type-tag.review{color:#39ff14}
+.type-tag.pick{color:#ffb700}
+.type-tag.post{color:#888}
+
+/* ---- rating ---- */
+.stars{color:#ff1a1a;font-size:14px;letter-spacing:2px;white-space:nowrap}
+.stars .off{color:#3a0000}
+.rating-num{color:#888;font-size:11px}
+
+/* ---- review header block (post page) ---- */
+.workbox{border:1px solid #39ff14;padding:14px;margin-top:16px;display:flex;gap:14px;align-items:flex-start}
+.workbox-thumb{width:80px;height:116px;flex:none;font-size:10px}
+.workbox-label{color:#39ff14;font-family:'Special Elite',monospace;font-size:11px;letter-spacing:2px}
+.workbox-name{color:#ff1a1a;font-size:16px;margin-top:6px}
+.workbox-creator{color:#888;font-size:12px;margin-top:2px}
+.workbox-rating{margin-top:8px}
+.workbox-verdict{color:#ccc;font-size:13px;font-style:italic;margin-top:8px;line-height:1.5;border-left:2px solid #3a0000;padding-left:10px}
+
+.sourcebox{border:1px solid #ffb700;padding:12px;margin-top:16px;color:#888;font-size:12px;line-height:1.6}
+.sourcebox .l{color:#ffb700;font-family:'Special Elite',monospace;font-size:11px;letter-spacing:2px;display:block;margin-bottom:4px}
+
+/* ---- post body ---- */
+.post-title{font-family:'Creepster',cursive;font-size:40px;color:#39ff14;line-height:1.1}
+.post-meta{color:#888;font-size:12px;margin-top:8px;border-bottom:1px solid #2a2a2a;padding-bottom:10px}
+.post-body{color:#ccc;font-size:14px;line-height:1.7;margin-top:16px}
+.post-body p{margin:0 0 12px}
+.backrow{margin-top:26px;border-top:1px dotted #333;padding-top:12px;font-size:13px;display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+
+/* ---- categories grid ---- */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat-card{border:1px solid #39ff14;padding:12px;text-align:center;display:block;text-decoration:none}
+.cat-card:hover{background:#0f1a0d}
+.cat-name{color:#ff1a1a;font-family:'Creepster',cursive;font-size:18px}
+.cat-sub{color:#888;font-size:11px;margin-top:4px}
+.cat-count{color:#39ff14;font-size:10px;margin-top:6px;letter-spacing:1px}
+
+/* ---- empty / lost states ---- */
+.empty{border:1px dashed #ff1a1a;padding:20px;text-align:center;margin-top:14px}
+.empty .label{color:#ff1a1a;font-size:12px}
+.empty img{height:60px;margin-top:10px;image-rendering:pixelated}
+.empty .note{color:#666;font-size:12px;margin-top:10px;line-height:1.6}
+.lost{border:2px solid #ff1a1a;padding:20px;text-align:center;margin-top:10px}
+.lost .big{font-family:'Creepster',cursive;font-size:34px;color:#ff1a1a}
+.lost .note{color:#888;font-size:13px;margin-top:8px}
+
+/* ---- controls (search / sort / filter) ---- */
+.controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.controls input,.controls select{border:1px solid #444;background:#050505;color:#ccc;font-family:'Courier Prime',monospace;font-size:12px;padding:7px 9px;box-sizing:border-box}
+.controls input:focus,.controls select:focus{outline:1px solid #39ff14}
+.controls input{flex:1;min-width:180px}
+.controls label{color:#888;font-size:11px;letter-spacing:1px}
+.result-count{color:#666;font-size:11px;margin:10px 0}
+
+/* ---- archive groups ---- */
+.year-head{color:#ff1a1a;font-family:'Creepster',cursive;font-size:26px;margin-top:26px;border-bottom:1px solid #2a0000;padding-bottom:4px}
+.year-head:first-child{margin-top:0}
+
+/* ---- about ---- */
+.about{margin-top:26px;border:1px dashed #444;padding:16px;display:flex;gap:16px}
+.about-head{color:#39ff14;font-family:'Special Elite',monospace;font-size:14px;margin-bottom:6px}
+.about-bio{color:#ccc;font-size:13px;line-height:1.6}
+.about-bio p{margin:0 0 10px}
+.about-photo{width:100px;height:100px;flex:none;object-fit:cover}
+
+/* ---- guestbook ---- */
+.guestbook{margin-top:26px;border:1px solid #ff1a1a;padding:16px}
+.guestbook-head{color:#ff1a1a;font-family:'Special Elite',monospace;font-size:14px;margin-bottom:10px}
+.gb-entries{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:160px;overflow:auto}
+.gb-entry{color:#888;font-size:12px}
+.gb-entry b{color:#39ff14;font-weight:normal}
+.gb-empty{color:#555;font-size:12px;font-style:italic}
+.gb-form{display:flex;flex-direction:column;gap:6px}
+.gb-form input{border:1px solid #444;background:#050505;color:#ccc;font-family:'Courier Prime',monospace;font-size:12px;padding:8px}
+.gb-row{display:flex;gap:8px}
+.gb-row input{flex:1}
+.gb-sign{cursor:pointer;border:1px solid #39ff14;background:none;color:#39ff14;font-family:'Courier Prime',monospace;font-size:12px;padding:8px 14px;text-align:center;white-space:nowrap}
+.gb-sign:hover{background:#0f1a0d}
+.gb-note{color:#555;font-size:10px;margin-top:8px;line-height:1.5}
+
+/* ---- sidebar ---- */
+.sidebar{display:flex;flex-direction:column;gap:14px}
+.counter-box{border:1px solid #39ff14;padding:12px;text-align:center}
+.counter-label{color:#39ff14;font-size:11px;letter-spacing:1px}
+.counter-digits{background:#000;color:#ff1a1a;font-family:'VT323',monospace;font-size:30px;letter-spacing:5px;margin-top:4px;padding:4px}
+
+.construction{border:1px dashed #ff1a1a;padding:12px;text-align:center}
+.construction-label{color:#ff1a1a;font-size:12px}
+.construction img{height:60px;margin-top:8px;image-rendering:pixelated}
+
+.midi{border:1px solid #444;padding:12px}
+.midi-label{color:#ccc;font-size:12px}
+.midi-track{color:#39ff14;font-size:13px;margin-top:2px}
+.midi-transport{color:#888;font-size:16px;margin-top:6px;letter-spacing:4px;cursor:pointer}
+.midi-transport .toggle{color:#39ff14}
+
+.badges{display:flex;flex-direction:column;gap:8px}
+.badge{font-size:10px;text-align:center;padding:6px}
+.badge.red{border:1px solid #ff1a1a;color:#ff1a1a}
+.badge.green{border:1px solid #39ff14;color:#39ff14}
+
+.friends{border:1px solid #444;padding:12px;text-align:center}
+.friends-label{color:#888;font-size:11px;margin-bottom:6px}
+.friends-badges{display:flex;flex-direction:column;gap:6px}
+.friends-badges a{font-size:11px;text-decoration:none;display:block;border:1px solid #333;padding:6px}
+.friends-badges a:hover{border-color:#39ff14}
+
+/* ---- narrow screens (design is intentionally desktop-era) ---- */
+@media (max-width:700px){
+  .body-grid{grid-template-columns:1fr}
+  .site-title{font-size:32px}
+  .hero.big .site-title{font-size:48px}
+  .cat-grid{grid-template-columns:1fr}
+  .page-title,.post-title{font-size:28px}
+  .card{flex-direction:column}
+  .card-thumb{width:100%;height:70px}
+}

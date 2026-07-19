@@ -7,104 +7,127 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#000;font-family:'Courier Prime',monospace}
-a{color:#ff1a1a}
-a:hover{color:#39ff14}
-.marq{white-space:nowrap;animation:marq 16s linear infinite;display:inline-block}
-@keyframes marq{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
-.page{min-height:100vh;background:radial-gradient(ellipse at top,#150000 0%,#000 60%);display:flex;justify-content:center;padding:24px 12px}
-.panel{width:920px;max-width:100%;background:#0a0a0a;border:1px solid #3a0000;box-shadow:0 0 60px rgba(255,0,0,.08);height:fit-content}
-.marq-bar{border-bottom:4px solid #ff1a1a;padding:8px 14px;background:#000;overflow:hidden}
-.marq-bar .marq{color:#39ff14;font-size:14px}
-.hero{padding:26px 20px 12px;text-align:center;background:radial-gradient(ellipse at center,#1a0000 0%,#0a0a0a 70%);border-bottom:1px solid #2a0000}
-.site-title{font-family:'Creepster',cursive;font-size:44px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
-.site-title a{color:#ff1a1a;text-decoration:none}
-.tagline{color:#39ff14;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
-nav{display:flex;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;justify-content:center;gap:24px;flex-wrap:wrap}
-nav a{font-size:14px;text-decoration:none}
-.content{padding:24px 22px;max-width:680px;margin:0 auto}
-.post-title{font-family:'Creepster',cursive;font-size:40px;color:#39ff14;line-height:1.1}
-.post-meta{color:#888;font-size:12px;margin-top:8px;border-bottom:1px solid #2a2a2a;padding-bottom:10px}
-.post-body{color:#ccc;font-size:14px;line-height:1.7;margin-top:16px}
-.post-body div{margin-top:12px}
-.backrow{margin-top:26px;border-top:1px dotted #333;padding-top:12px;font-size:13px;display:flex;gap:18px;flex-wrap:wrap}
-.lost{border:2px solid #ff1a1a;padding:20px;text-align:center;margin-top:10px}
-.lost .big{font-family:'Creepster',cursive;font-size:34px;color:#ff1a1a}
-.lost .note{color:#888;font-size:13px;margin-top:8px}
-footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px solid #2a0000}
-@media (max-width:700px){.site-title{font-size:32px}.post-title{font-size:28px}}
-</style>
+<link rel="stylesheet" href="assets/gs.css">
 </head>
 <body>
 <div class="page">
 <div class="panel">
-<div class="marq-bar"><span class="marq">you are reading a tale from the GRAVEYARD SHIFT archive — do not read alone — the keeper accepts no responsibility for what follows you home</span></div>
-<header class="hero">
-<div class="site-title"><a href="index.html">GRAVEYARD SHIFT</a></div>
-<div class="tagline">a zine for the sleep-deprived and superstitious</div>
-</header>
-<nav>
-<a href="category.html?cat=books">books</a>
-<a href="category.html?cat=creepypasta">creepypasta</a>
-<a href="category.html?cat=movies">movies</a>
-<a href="category.html?cat=video+games">video games</a>
-<a href="index.html#about">about</a>
-<a href="index.html#guestbook" style="color:#39ff14">guestbook</a>
-</nav>
-<div class="content" id="content"></div>
-<footer>© 2026 GRAVEYARD SHIFT — do not read alone. best experienced with the lights off.</footer>
+
+<div id="gs-shell"></div>
+<div class="content narrow" id="content"></div>
+<div id="gs-footer"></div>
+
 </div>
 </div>
-<script src="posts.js"></script>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
 <script>
 (function () {
   "use strict";
-  var posts = [];
-  try { posts = JSON.parse(localStorage.getItem("gs_posts") || "null") || []; }
-  catch (e) { posts = []; }
-  if (!posts.length && window.GS_POSTS) posts = window.GS_POSTS;
-
   var id = new URLSearchParams(location.search).get("id");
-  var post = null;
-  posts.forEach(function (p) { if (String(p.id) === String(id)) post = p; });
+  var post = GS.byId(id);
+  var cat = post ? String(post.cat || "").toLowerCase() : "";
+
+  GS.boot({
+    here: cat,
+    marquee: "you are reading a tale from the GRAVEYARD SHIFT archive — do not read alone — " +
+             "the keeper accepts no responsibility for what follows you home"
+  });
 
   var c = document.getElementById("content");
+
+  /* ---- not found ---- */
   if (!post) {
-    var lost = document.createElement("div");
-    lost.className = "lost";
-    var big = document.createElement("div"); big.className = "big";
-    big.textContent = "THIS TALE WAS NEVER BURIED";
-    var note = document.createElement("div"); note.className = "note";
-    note.textContent = "either the keeper un-buried it, or it never existed. spooky. ";
-    var back = document.createElement("a"); back.href = "index.html";
-    back.textContent = "← flee to the homepage";
-    lost.appendChild(big); lost.appendChild(note); note.appendChild(back);
+    var lost = GS.el("div", "lost");
+    lost.appendChild(GS.el("div", "big", "THIS TALE WAS NEVER BURIED"));
+    var note = GS.el("div", "note", "Either the keeper un-buried it, or it never existed. Spooky. ");
+    note.appendChild(GS.link("index.html", "← flee to the homepage"));
+    lost.appendChild(note);
     c.appendChild(lost);
     return;
   }
 
   document.title = "GRAVEYARD SHIFT — " + post.title;
-  var t = document.createElement("div"); t.className = "post-title";
-  t.textContent = post.title.toUpperCase();
-  var m = document.createElement("div"); m.className = "post-meta";
-  m.textContent = "by the keeper · " + post.date + " · filed under ";
-  var catlink = document.createElement("a");
-  catlink.href = "category.html?cat=" + encodeURIComponent((post.cat || "").toLowerCase());
-  catlink.textContent = post.cat;
-  m.appendChild(catlink);
-  var b = document.createElement("div"); b.className = "post-body";
-  String(post.body).split(/\n\s*\n/).forEach(function (para) {
-    var p = document.createElement("div");
-    p.textContent = para;
-    b.appendChild(p);
-  });
-  var back = document.createElement("div"); back.className = "backrow";
-  var a1 = document.createElement("a"); a1.href = "index.html"; a1.textContent = "← back to the graveyard";
-  var a2 = document.createElement("a"); a2.href = "category.html?cat=" + encodeURIComponent((post.cat || "").toLowerCase());
-  a2.textContent = "more " + post.cat + " →";
-  back.appendChild(a1); back.appendChild(a2);
-  c.appendChild(t); c.appendChild(m); c.appendChild(b); c.appendChild(back);
+
+  if (post.draft) {
+    var d = GS.el("div", "preview-bar", "⚠ DRAFT — this post is hidden from the public site.");
+    d.style.marginBottom = "14px";
+    c.appendChild(d);
+  }
+
+  /* ---- title + meta ---- */
+  var t = GS.el("div", "post-title", post.title.toUpperCase());
+  var m = GS.el("div", "post-meta");
+  m.textContent = "by the keeper · " + GS.fmtDate(post.date) + " · filed under ";
+  m.appendChild(GS.link("category.html?cat=" + encodeURIComponent(cat), post.cat));
+  c.appendChild(t);
+  c.appendChild(m);
+
+  /* ---- review header block ---- */
+  if (post.type === "review" && post.work) {
+    var w = post.work;
+    var box = GS.el("div", "workbox");
+    box.appendChild(GS.thumb(post, "workbox-thumb"));
+
+    var info = GS.el("div");
+    info.style.flex = "1";
+    info.appendChild(GS.el("div", "workbox-label", "THE KEEPER'S VERDICT"));
+    info.appendChild(GS.el("div", "workbox-name", post.title));
+
+    var credit = [w.creator, w.year].filter(Boolean).join(" · ");
+    if (credit) info.appendChild(GS.el("div", "workbox-creator", credit));
+
+    if (w.rating) {
+      var r = GS.el("div", "workbox-rating");
+      r.appendChild(GS.stars(w.rating));
+      info.appendChild(r);
+    }
+    if (w.verdict) info.appendChild(GS.el("div", "workbox-verdict", "“" + w.verdict + "”"));
+
+    box.appendChild(info);
+    c.appendChild(box);
+  }
+
+  /* ---- creepypasta credit block ---- */
+  if (post.type === "pick" && post.source) {
+    var s = GS.el("div", "sourcebox");
+    s.appendChild(GS.el("span", "l", "NOT MY STORY"));
+    s.appendChild(document.createTextNode(
+      "Originally written by " + (post.source.author || "an unknown author") + ". "));
+    var url = GS.safeUrl(post.source.url);
+    if (url) {
+      var a = GS.link(url, "read the original →");
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      s.appendChild(a);
+    }
+    c.appendChild(s);
+  }
+
+  /* ---- body ---- */
+  c.appendChild(GS.paragraphs(post.body, GS.el("div", "post-body")));
+
+  /* ---- prev / next within the whole archive ---- */
+  var all = GS.posts();
+  var i = -1;
+  all.forEach(function (p, n) { if (String(p.id) === String(post.id)) i = n; });
+
+  var back = GS.el("div", "backrow");
+  var left = GS.el("div");
+  var right = GS.el("div");
+  right.style.textAlign = "right";
+
+  if (i > 0) left.appendChild(GS.link("post.html?id=" + encodeURIComponent(all[i - 1].id), "← " + all[i - 1].title));
+  else left.appendChild(GS.link("index.html", "← back to the graveyard"));
+
+  if (i > -1 && i < all.length - 1) right.appendChild(GS.link("post.html?id=" + encodeURIComponent(all[i + 1].id), all[i + 1].title + " →"));
+  else right.appendChild(GS.link("category.html?cat=" + encodeURIComponent(cat), "more " + post.cat + " →"));
+
+  back.appendChild(left);
+  back.appendChild(right);
+  c.appendChild(back);
 })();
 </script>
 </body>

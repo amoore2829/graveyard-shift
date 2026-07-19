@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRAVEYARD SHIFT — about the keeper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gs.css">
+</head>
+<body>
+<div class="page">
+<div class="panel">
+
+<div id="gs-shell"></div>
+
+<div class="content narrow">
+<div class="page-title" id="about-title">◆ ABOUT THE KEEPER ◆</div>
+<div class="page-sub">who turns the lights off around here</div>
+
+<div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:20px">
+<div id="about-photo"></div>
+<div class="about-bio" id="about-bio" style="flex:1;min-width:240px"></div>
+</div>
+
+<section style="margin-top:30px">
+<div class="section-head">◆ THE LEDGER ◆</div>
+<div class="cat-grid" id="stats"></div>
+</section>
+
+<section style="margin-top:30px">
+<div class="section-head">◆ WHAT'S IN HERE ◆</div>
+<div class="cat-grid" id="cat-grid"></div>
+</section>
+
+<section style="margin-top:30px" id="fav-wrap">
+<div class="section-head">◆ HIGHEST RATED ◆</div>
+<div class="card-list" id="favs"></div>
+</section>
+
+<section style="margin-top:30px">
+<div class="section-head">◆ FIND ME ◆</div>
+<div id="links" style="color:#888;font-size:13px;line-height:1.8"></div>
+</section>
+</div>
+
+<div id="gs-footer"></div>
+
+</div>
+</div>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
+<script>
+(function () {
+  "use strict";
+  GS.boot({ here: "about", marquee: "about the keeper — est. 2026 — updated whenever the house makes noises" });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var about = GS.SITE.about || {};
+  var posts = GS.posts();
+
+  $("about-title").textContent = "◆ " + (about.heading || "ABOUT THE KEEPER") + " ◆";
+  GS.paragraphs(about.bio, $("about-bio"));
+
+  /* ---- portrait ---- */
+  if (about.photo) {
+    var img = document.createElement("img");
+    img.src = about.photo; img.alt = "the keeper";
+    img.style.cssText = "width:160px;height:160px;object-fit:cover;flex:none";
+    $("about-photo").appendChild(img);
+  } else {
+    var ph = GS.el("div", "stripe-img", "photo:\nsite owner");
+    ph.style.cssText = "width:160px;height:160px;flex:none;white-space:pre-line";
+    $("about-photo").appendChild(ph);
+  }
+
+  /* ---- ledger stats ---- */
+  var reviews = posts.filter(function (p) { return p.type === "review" && p.work; });
+  var rated = reviews.filter(function (p) { return Number(p.work.rating) > 0; });
+  var avg = rated.length
+    ? (rated.reduce(function (s, p) { return s + Number(p.work.rating); }, 0) / rated.length).toFixed(1)
+    : "—";
+
+  function stat(label, value) {
+    var box = GS.el("div", "cat-card");
+    box.style.cursor = "default";
+    box.appendChild(GS.el("div", "counter-digits", String(value)));
+    box.appendChild(GS.el("div", "cat-sub", label));
+    return box;
+  }
+
+  var stats = $("stats");
+  stats.appendChild(stat("tales buried", posts.length));
+  stats.appendChild(stat("things reviewed", reviews.length));
+  stats.appendChild(stat("average rating", avg));
+  stats.appendChild(stat("keeping watch since", GS.SITE.since || "2026"));
+
+  /* ---- what's in here ---- */
+  var grid = $("cat-grid");
+  Object.keys(GS.CATS).forEach(function (key) {
+    var meta = GS.CATS[key];
+    var n = GS.byCat(key).length;
+    var a = GS.link("category.html?cat=" + encodeURIComponent(key), null, "cat-card");
+    a.appendChild(GS.el("div", "cat-name", meta.title));
+    a.appendChild(GS.el("div", "cat-sub", meta.sub));
+    a.appendChild(GS.el("div", "cat-count", n === 0 ? "empty" : n + (n === 1 ? " tale" : " tales")));
+    grid.appendChild(a);
+  });
+
+  /* ---- top three rated ---- */
+  var favs = rated.slice().sort(function (a, b) {
+    return Number(b.work.rating) - Number(a.work.rating);
+  }).slice(0, 3);
+
+  if (favs.length) {
+    favs.forEach(function (p) { $("favs").appendChild(GS.card(p)); });
+  } else {
+    $("fav-wrap").classList.add("hidden");
+  }
+
+  /* ---- links, from content/site.js ---- */
+  var links = GS.SITE.links || [];
+  var host = $("links");
+  if (links.length) {
+    links.forEach(function (l) {
+      var url = GS.safeUrl(l.url);
+      var row = GS.el("div");
+      row.appendChild(document.createTextNode(l.label + ": "));
+      if (url) {
+        var a = GS.link(url, l.text || url);
+        a.target = "_blank"; a.rel = "noopener noreferrer";
+        row.appendChild(a);
+      } else {
+        row.appendChild(document.createTextNode(l.text || ""));
+      }
+      host.appendChild(row);
+    });
+  } else {
+    host.appendChild(GS.el("div", "gb-empty",
+      "No links yet — add them to the `links` list in content/site.js."));
+  }
+})();
+</script>
+</body>
+</html>

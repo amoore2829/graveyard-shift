@@ -7,104 +7,108 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#000;font-family:'Courier Prime',monospace}
-a{color:#ff1a1a}
-a:hover{color:#39ff14}
-.marq{white-space:nowrap;animation:marq 16s linear infinite;display:inline-block}
-@keyframes marq{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
-.page{min-height:100vh;background:radial-gradient(ellipse at top,#150000 0%,#000 60%);display:flex;justify-content:center;padding:24px 12px}
-.panel{width:920px;max-width:100%;background:#0a0a0a;border:1px solid #3a0000;box-shadow:0 0 60px rgba(255,0,0,.08);height:fit-content}
-.marq-bar{border-bottom:4px solid #ff1a1a;padding:8px 14px;background:#000;overflow:hidden}
-.marq-bar .marq{color:#39ff14;font-size:14px}
-.hero{padding:26px 20px 12px;text-align:center;background:radial-gradient(ellipse at center,#1a0000 0%,#0a0a0a 70%);border-bottom:1px solid #2a0000}
-.site-title{font-family:'Creepster',cursive;font-size:44px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
-.site-title a{color:#ff1a1a;text-decoration:none}
-.tagline{color:#39ff14;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
-nav{display:flex;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;justify-content:center;gap:24px;flex-wrap:wrap}
-nav a{font-size:14px;text-decoration:none}
-.content{padding:24px 22px}
-.cat-title{font-family:'Creepster',cursive;font-size:40px;color:#39ff14;line-height:1}
-.cat-sub{color:#888;font-family:'Special Elite',monospace;font-size:13px;letter-spacing:1px;margin-top:4px;margin-bottom:18px}
-.post-list{display:flex;flex-direction:column;gap:12px;margin-top:14px}
-.post-row{border-bottom:1px dotted #333;padding-bottom:10px;display:flex;justify-content:space-between;gap:10px}
-.post-row a{font-size:14px;text-decoration:none}
-.post-row span{color:#666;font-size:12px}
-.empty{border:1px dashed #ff1a1a;padding:20px;text-align:center;margin-top:14px}
-.empty .label{color:#ff1a1a;font-size:12px}
-.empty img{height:60px;margin-top:10px;image-rendering:pixelated}
-.empty .note{color:#666;font-size:12px;margin-top:10px}
-footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px solid #2a0000}
-@media (max-width:700px){.site-title{font-size:32px}.cat-title{font-size:30px}}
-</style>
+<link rel="stylesheet" href="assets/gs.css">
 </head>
 <body>
 <div class="page">
 <div class="panel">
-<div class="marq-bar"><span class="marq">webring: [◄ prev site] MIDNIGHT HOLLOW HORROR WEBRING [next site ►] — sign the guestbook before the spirits notice you didn't</span></div>
-<header class="hero">
-<div class="site-title"><a href="index.html">GRAVEYARD SHIFT</a></div>
-<div class="tagline">a zine for the sleep-deprived and superstitious</div>
-</header>
-<nav>
-<a href="category.html?cat=books">books</a>
-<a href="category.html?cat=creepypasta">creepypasta</a>
-<a href="category.html?cat=movies">movies</a>
-<a href="category.html?cat=video+games">video games</a>
-<a href="index.html#about">about</a>
-<a href="index.html#guestbook" style="color:#39ff14">guestbook</a>
-</nav>
+
+<div id="gs-shell"></div>
+
 <div class="content">
-<div class="cat-title" id="cat-title">…</div>
-<div class="cat-sub" id="cat-sub"></div>
-<div class="post-list" id="cat-posts"></div>
-<div class="empty hidden" id="cat-empty" style="display:none">
-<div class="label">🕯 NOTHING BURIED UNDER THIS STONE YET 🕯</div>
-<img src="assets/resetti.gif" alt="a mole, digging">
-<div class="note">the keeper is still digging. check back after midnight.</div>
+<div class="page-title" id="cat-title">…</div>
+<div class="page-sub" id="cat-sub"></div>
+
+<div class="controls hidden" id="controls">
+<label for="f-type">SHOW</label>
+<select id="f-type">
+<option value="">everything</option>
+<option value="review">reviews only</option>
+<option value="pick">picks only</option>
+<option value="post">writing only</option>
+</select>
+<label for="f-sort">SORT</label>
+<select id="f-sort">
+<option value="newest">newest first</option>
+<option value="oldest">oldest first</option>
+<option value="rating">highest rated</option>
+<option value="title">by title</option>
+</select>
+</div>
+
+<div class="result-count hidden" id="count"></div>
+<div class="card-list" id="cat-posts"></div>
+<div id="cat-empty"></div>
+</div>
+
+<div id="gs-footer"></div>
+
 </div>
 </div>
-<footer>© 2026 GRAVEYARD SHIFT — do not read alone. best experienced with the lights off.</footer>
-</div>
-</div>
-<script src="posts.js"></script>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
 <script>
 (function () {
   "use strict";
-  var META = {
-    "books":       { title: "BOOKS",       sub: "tomes that bite back" },
-    "creepypasta": { title: "CREEPYPASTA", sub: "copy-pasted nightmares" },
-    "movies":      { title: "MOVIES",      sub: "films best watched through your fingers" },
-    "video games": { title: "VIDEO GAMES", sub: "haunted cartridges & cursed saves" }
-  };
   var cat = (new URLSearchParams(location.search).get("cat") || "").toLowerCase();
-  var meta = META[cat] || { title: "LOST SECTION", sub: "this wing of the graveyard doesn't exist… yet" };
+  var meta = GS.CATS[cat] || { title: "LOST SECTION", sub: "this wing of the graveyard doesn't exist… yet" };
+
+  GS.boot({ here: cat, marquee: "browsing the " + meta.title.toLowerCase() + " wing — mind the loose flagstones" });
+
   document.title = "GRAVEYARD SHIFT — " + meta.title.toLowerCase();
   document.getElementById("cat-title").textContent = "◆ " + meta.title + " ◆";
   document.getElementById("cat-sub").textContent = meta.sub;
 
-  var posts = [];
-  try { posts = JSON.parse(localStorage.getItem("gs_posts") || "null") || []; }
-  catch (e) { posts = []; }
-  if (!posts.length && window.GS_POSTS) posts = window.GS_POSTS;
-  var mine = posts.filter(function (p) { return (p.cat || "").toLowerCase() === cat; });
-
+  var all = GS.byCat(cat);
   var list = document.getElementById("cat-posts");
-  if (!mine.length) {
-    document.getElementById("cat-empty").style.display = "block";
+  var countEl = document.getElementById("count");
+
+  if (!all.length) {
+    document.getElementById("cat-empty").appendChild(GS.emptyState(
+      "NOTHING BURIED UNDER THIS STONE YET",
+      GS.CATS[cat]
+        ? "The keeper is still digging. Write the first " + cat + " entry from the control panel."
+        : "No such section. Try the nav above."));
     return;
   }
-  mine.forEach(function (post) {
-    var row = document.createElement("div");
-    row.className = "post-row";
-    var link = document.createElement("a");
-    link.href = "post.html?id=" + encodeURIComponent(post.id);
-    link.textContent = post.title;
-    var m = document.createElement("span");
-    m.textContent = post.date;
-    row.appendChild(link); row.appendChild(m);
-    list.appendChild(row);
-  });
+
+  document.getElementById("controls").classList.remove("hidden");
+  countEl.classList.remove("hidden");
+
+  var fType = document.getElementById("f-type");
+  var fSort = document.getElementById("f-sort");
+
+  function rating(p) {
+    return (p.work && Number(p.work.rating)) || 0;
+  }
+
+  function render() {
+    var shown = all.filter(function (p) {
+      return !fType.value || (p.type || "post") === fType.value;
+    });
+
+    var mode = fSort.value;
+    shown = shown.slice().sort(function (a, b) {
+      if (mode === "oldest") return a.date < b.date ? -1 : 1;
+      if (mode === "title")  return a.title.localeCompare(b.title);
+      if (mode === "rating") return rating(b) - rating(a);
+      return a.date < b.date ? 1 : -1;
+    });
+
+    list.textContent = "";
+    countEl.textContent = shown.length + (shown.length === 1 ? " tale" : " tales");
+    if (!shown.length) {
+      list.appendChild(GS.el("div", "gb-empty", "nothing matches that filter."));
+      return;
+    }
+    shown.forEach(function (p) { list.appendChild(GS.card(p)); });
+  }
+
+  fType.addEventListener("change", render);
+  fSort.addEventListener("change", render);
+  render();
 })();
 </script>
 </body>

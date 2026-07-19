@@ -1,0 +1,8 @@
+# OneDrive / OS noise
+.synctest
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# editor
+.vscode/

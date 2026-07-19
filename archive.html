@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GRAVEYARD SHIFT — the full archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/gs.css">
+</head>
+<body>
+<div class="page">
+<div class="panel">
+
+<div id="gs-shell"></div>
+
+<div class="content">
+<div class="page-title">◆ THE ARCHIVE ◆</div>
+<div class="page-sub">everything ever buried here, oldest bones at the bottom</div>
+
+<div class="controls" id="controls">
+<input id="q" type="search" placeholder="search titles, authors, verdicts, and text…" autocomplete="off">
+<select id="f-cat">
+<option value="">all sections</option>
+</select>
+<select id="f-type">
+<option value="">all types</option>
+<option value="review">reviews</option>
+<option value="pick">picks</option>
+<option value="post">writing</option>
+</select>
+</div>
+
+<div class="result-count" id="count"></div>
+<div id="results"></div>
+</div>
+
+<div id="gs-footer"></div>
+
+</div>
+</div>
+
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
+<script>
+(function () {
+  "use strict";
+  GS.boot({ here: "archive", marquee: "the complete archive — every tale, every review, every bad idea" });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var all = GS.posts();
+  var results = $("results");
+  var countEl = $("count");
+  var controls = $("controls");
+
+  if (!all.length) {
+    controls.classList.add("hidden");
+    countEl.classList.add("hidden");
+    results.appendChild(GS.emptyState(
+      "THE ARCHIVE IS EMPTY",
+      "Nothing has been buried yet. Once you publish your first post it will appear here, filed by year."));
+    return;
+  }
+
+  /* populate the section filter with categories that actually have posts */
+  var catSel = $("f-cat");
+  Object.keys(GS.CATS).forEach(function (key) {
+    if (!GS.byCat(key).length) return;
+    var o = document.createElement("option");
+    o.value = key;
+    o.textContent = GS.CATS[key].title.toLowerCase();
+    catSel.appendChild(o);
+  });
+
+  /* one lowercased haystack per post, built once */
+  var index = all.map(function (p) {
+    var bits = [p.title, p.cat, p.type, p.body];
+    if (p.work)   bits.push(p.work.creator, p.work.year, p.work.verdict);
+    if (p.source) bits.push(p.source.author);
+    return { post: p, hay: bits.filter(Boolean).join(" ").toLowerCase() };
+  });
+
+  var q = $("q"), fType = $("f-type");
+
+  function render() {
+    var term = q.value.trim().toLowerCase();
+    var shown = index.filter(function (row) {
+      var p = row.post;
+      if (catSel.value && String(p.cat || "").toLowerCase() !== catSel.value) return false;
+      if (fType.value && (p.type || "post") !== fType.value) return false;
+      return !term || row.hay.indexOf(term) !== -1;
+    }).map(function (row) { return row.post; });
+
+    results.textContent = "";
+    countEl.textContent = shown.length + (shown.length === 1 ? " tale" : " tales") +
+                          (term || catSel.value || fType.value ? " matching" : " in total");
+
+    if (!shown.length) {
+      results.appendChild(GS.el("div", "gb-empty",
+        "Nothing matches. The grave you're looking for may be unmarked."));
+      return;
+    }
+
+    /* group by year, newest year first */
+    var years = [];
+    var groups = {};
+    shown.forEach(function (p) {
+      var y = GS.year(p.date);
+      if (!groups[y]) { groups[y] = []; years.push(y); }
+      groups[y].push(p);
+    });
+    years.sort(function (a, b) { return b.localeCompare(a); });
+
+    years.forEach(function (y) {
+      results.appendChild(GS.el("div", "year-head", y));
+      var list = GS.el("div", "card-list");
+      groups[y].forEach(function (p) { list.appendChild(GS.card(p)); });
+      results.appendChild(list);
+    });
+  }
+
+  q.addEventListener("input", render);
+  catSel.addEventListener("change", render);
+  fType.addEventListener("change", render);
+  render();
+})();
+</script>
+</body>
+</html>

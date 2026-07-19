@@ -7,163 +7,39 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Creepster&family=VT323&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-<style>
-body{margin:0;background:#000;font-family:'Courier Prime',monospace}
-a{color:#ff1a1a}
-a:hover{color:#39ff14}
-
-@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:0}}
-.blinker{animation:blink 1s step-start infinite}
-
-.marq{white-space:nowrap;animation:marq 16s linear infinite;display:inline-block}
-@keyframes marq{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
-
-.stripe-img{background:repeating-linear-gradient(45deg,#1a0000 0 12px,#240000 12px 24px);display:flex;align-items:center;justify-content:center;color:#8a8a8a;font:13px/1.5 'Courier Prime',monospace;text-align:center;padding:10px;box-sizing:border-box}
-
-.page{min-height:100vh;background:radial-gradient(ellipse at top,#150000 0%,#000 60%);display:flex;justify-content:center;padding:24px 12px}
-.panel{width:920px;max-width:100%;background:#0a0a0a;border:1px solid #3a0000;box-shadow:0 0 60px rgba(255,0,0,.08)}
-
-.marq-bar{border-bottom:4px solid #ff1a1a;padding:8px 14px;background:#000;overflow:hidden}
-.marq-bar .marq{color:#39ff14;font-size:14px}
-
-.hero{padding:40px 20px 16px;text-align:center;background:radial-gradient(ellipse at center,#1a0000 0%,#0a0a0a 70%);border-bottom:1px solid #2a0000}
-.site-title{font-family:'Creepster',cursive;font-size:80px;color:#ff1a1a;text-shadow:0 0 18px #a80000;line-height:1}
-.tagline{color:#39ff14;font-family:'Special Elite',monospace;font-size:15px;letter-spacing:2px;margin-top:6px}
-
-nav{display:flex;background:#111;border-top:1px solid #39ff14;border-bottom:1px solid #39ff14;padding:10px 20px;justify-content:center;gap:28px;flex-wrap:wrap}
-nav a{font-size:14px;text-decoration:none}
-
-.body-grid{display:grid;grid-template-columns:2fr 1fr;gap:22px;padding:24px 22px}
-
-.featured{border:2px solid #ff1a1a;padding:16px}
-.featured-title{font-family:'Creepster',cursive;font-size:34px;color:#39ff14;margin-top:14px;line-height:1.1}
-.featured-body{color:#ccc;font-size:14px;line-height:1.6;margin-top:8px}
-.featured-meta{color:#888;font-size:12px;margin-top:10px}
-.featured-meta a{font-size:12px}
-
-.section-head{color:#39ff14;font-family:'Special Elite',monospace;font-size:14px;border-bottom:1px solid #2a2a2a;padding-bottom:6px;margin-bottom:12px}
-
-.post-list{display:flex;flex-direction:column;gap:12px}
-.post-row{border-bottom:1px dotted #333;padding-bottom:10px;display:flex;justify-content:space-between;gap:10px}
-.post-row:last-child{border-bottom:none;padding-bottom:0}
-.post-row a{font-size:14px;text-decoration:none}
-.post-row span{color:#666;font-size:12px}
-
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.cat-card{border:1px solid #39ff14;padding:12px;text-align:center;display:block;text-decoration:none}
-.cat-name{color:#ff1a1a;font-family:'Creepster',cursive;font-size:18px}
-.cat-sub{color:#888;font-size:11px;margin-top:4px}
-
-.about{margin-top:26px;border:1px dashed #444;padding:16px;display:flex;gap:16px}
-.about-head{color:#39ff14;font-family:'Special Elite',monospace;font-size:14px;margin-bottom:6px}
-.about-bio{color:#ccc;font-size:13px;line-height:1.6}
-
-.guestbook{margin-top:26px;border:1px solid #ff1a1a;padding:16px}
-.guestbook-head{color:#ff1a1a;font-family:'Special Elite',monospace;font-size:14px;margin-bottom:10px}
-.gb-entries{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;max-height:160px;overflow:auto}
-.gb-entry{color:#888;font-size:12px}
-.gb-entry b{color:#39ff14;font-weight:normal}
-.gb-form{display:flex;flex-direction:column;gap:6px}
-.gb-form input{border:1px solid #444;background:#050505;color:#ccc;font-family:'Courier Prime',monospace;font-size:12px;padding:8px}
-.gb-row{display:flex;gap:8px}
-.gb-row input{flex:1}
-.gb-sign{cursor:pointer;border:1px solid #39ff14;background:none;color:#39ff14;font-family:'Courier Prime',monospace;font-size:12px;padding:8px 14px;text-align:center;white-space:nowrap}
-
-.sidebar{display:flex;flex-direction:column;gap:14px}
-.counter-box{border:1px solid #39ff14;padding:12px;text-align:center}
-.counter-label{color:#39ff14;font-size:11px;letter-spacing:1px}
-.counter-digits{background:#000;color:#ff1a1a;font-family:'VT323',monospace;font-size:30px;letter-spacing:5px;margin-top:4px;padding:4px}
-
-.construction{border:1px dashed #ff1a1a;padding:12px;text-align:center}
-.construction-label{color:#ff1a1a;font-size:12px}
-
-.midi{border:1px solid #444;padding:12px}
-.midi-label{color:#ccc;font-size:12px}
-.midi-track{color:#39ff14;font-size:13px;margin-top:2px}
-.midi-transport{color:#888;font-size:16px;margin-top:6px;letter-spacing:4px;cursor:pointer}
-.midi-transport .toggle{color:#39ff14}
-
-.badges{display:flex;flex-direction:column;gap:8px}
-.badge{font-size:10px;text-align:center;padding:6px}
-.badge.red{border:1px solid #ff1a1a;color:#ff1a1a}
-.badge.green{border:1px solid #39ff14;color:#39ff14}
-
-.friends{border:1px solid #444;padding:12px;text-align:center}
-.friends-label{color:#888;font-size:11px;margin-bottom:6px}
-.friends-badges{display:flex;flex-direction:column;gap:6px}
-
-footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px solid #2a0000}
-
-/* graceful fallback for narrow screens (design is intentionally desktop-era) */
-@media (max-width:700px){
-  .body-grid{grid-template-columns:1fr}
-  .site-title{font-size:48px}
-  .cat-grid{grid-template-columns:1fr}
-}
-</style>
+<link rel="stylesheet" href="assets/gs.css">
 </head>
 <body>
 <div class="page">
 <div class="panel">
 
-<div class="marq-bar">
-<span class="marq">webring: [◄ prev site] MIDNIGHT HOLLOW HORROR WEBRING [next site ►] — you are visitor #006661 — sign the guestbook before the spirits notice you didn't</span>
-</div>
-
-<header class="hero">
-<div class="site-title">GRAVEYARD SHIFT</div>
-<div class="tagline">a zine for the sleep-deprived and superstitious</div>
-</header>
-
-<nav>
-<a href="category.html?cat=books">books</a>
-<a href="category.html?cat=creepypasta">creepypasta</a>
-<a href="category.html?cat=movies">movies</a>
-<a href="category.html?cat=video+games">video games</a>
-<a href="#about">about</a>
-<a href="#guestbook" style="color:#39ff14">guestbook</a>
-</nav>
+<div id="gs-shell"></div>
 
 <div class="body-grid">
 
 <main>
-<article class="featured">
-<div class="stripe-img" id="featured-img" style="height:220px">photo: foggy motel hallway, door 214 ajar</div>
-<div class="featured-title" id="featured-title">THE THING IN ROOM 214</div>
-<div class="featured-body" id="featured-body">Nobody who checks in past midnight remembers checking out. A three-part investigation into the Hollow Pines Motel and the guest register nobody will admit to keeping.</div>
-<div class="featured-meta" id="featured-meta">by admin · July 18, 2026 · 12 comments · <a href="#">read more →</a></div>
-</article>
+<div id="featured"></div>
 
 <section style="margin-top:22px">
 <div class="section-head">◆ RECENT POSTS ◆</div>
-<div class="post-list" id="post-list">
-<div class="post-row"><a href="#">The Widow's Walk</a><span>urban legend · 3 comments</span></div>
-<div class="post-row"><a href="#">Chain Letter From Hell</a><span>creepypasta · 8 comments</span></div>
-<div class="post-row"><a href="#">Reviewing: The Bunny Man Tapes</a><span>review · 1 comment</span></div>
-<div class="post-row"><a href="#">Don't Answer the Second Knock</a><span>urban legend · 15 comments</span></div>
-<div class="post-row"><a href="#">She Was Never in the Photo</a><span>creepypasta · 6 comments</span></div>
-</div>
+<div class="post-list" id="post-list"></div>
 </section>
 
 <section style="margin-top:26px">
 <div class="section-head" style="margin-bottom:14px">◆ CATEGORIES ◆</div>
-<div class="cat-grid">
-<a class="cat-card" href="category.html?cat=books"><div class="cat-name">Books</div><div class="cat-sub">tomes that bite back</div></a>
-<a class="cat-card" href="category.html?cat=creepypasta"><div class="cat-name">Creepypasta</div><div class="cat-sub">copy-pasted nightmares</div></a>
-<a class="cat-card" href="category.html?cat=movies"><div class="cat-name">Movies</div><div class="cat-sub">films best watched through your fingers</div></a>
-<a class="cat-card" href="category.html?cat=video+games"><div class="cat-name">Video Games</div><div class="cat-sub">haunted cartridges &amp; cursed saves</div></a>
-</div>
+<div class="cat-grid" id="cat-grid"></div>
 </section>
 
 <section id="about" class="about">
-<div class="stripe-img" style="width:100px;height:100px;flex:none">photo:<br>site owner</div>
+<div id="about-photo"></div>
 <div>
-<div class="about-head">◆ ABOUT THE KEEPER ◆</div>
-<div class="about-bio">I collect the stories nobody wants to believe — motel legends, chain-letter curses, and the tapes found in the woods. Updated whenever the house makes noises. Est. 2026.</div>
+<div class="about-head" id="about-head">◆ ABOUT THE KEEPER ◆</div>
+<div class="about-bio" id="about-bio"></div>
+<div style="margin-top:10px;font-size:12px"><a href="about.html">more about the keeper →</a></div>
 </div>
 </section>
 
-<section id="guestbook" class="guestbook">
+<section id="guestbook" class="guestbook hidden">
 <div class="guestbook-head">◆ GUESTBOOK ◆</div>
 <div class="gb-entries" id="gb-entries"></div>
 <div class="gb-form">
@@ -173,155 +49,192 @@ footer{text-align:center;padding:16px;color:#555;font-size:11px;border-top:1px s
 <button class="gb-sign" id="gb-sign" type="button">SIGN →</button>
 </div>
 </div>
+<div class="gb-note">note: the guestbook has no backend yet — messages live only in your browser and vanish on reload.</div>
 </section>
 </main>
 
 <aside class="sidebar">
 <div class="counter-box">
 <div class="counter-label">SOULS TRAPPED HERE</div>
-<div class="counter-digits" id="visitor-count">006661</div>
+<div class="counter-digits" id="visitor-count">000000</div>
 </div>
 
 <div class="construction">
 <div class="construction-label">🕯 SECTION UNDER CONSTRUCTION 🕯</div>
-<img src="assets/resetti.gif" alt="a mole, digging" style="height:60px;margin-top:8px;image-rendering:pixelated">
+<img src="assets/resetti.gif" alt="a mole, digging">
 </div>
 
 <div class="midi">
 <div class="midi-label">🎵 now playing:</div>
-<div class="midi-track">dead_hallway.mid</div>
+<div class="midi-track" id="midi-track"></div>
 <div class="midi-transport" id="midi-transport"><span class="toggle" id="midi-toggle">▶</span> ■ ▓▓▓░░</div>
 </div>
 
 <div class="badges">
 <div class="badge red">BEST VIEWED IN<br>NETSCAPE 4.0</div>
 <div class="badge green">OPTIMIZED FOR<br>800×600</div>
-<div class="badge red">🔗 HORROR WEBRING 🔗<br>[prev] · [random] · [next]</div>
 </div>
 
-<div class="friends">
+<div class="friends hidden" id="friends">
 <div class="friends-label">FRIENDS OF THE SITE</div>
-<div class="friends-badges">
-<div class="stripe-img" style="height:34px">badge: haunted-diary.net</div>
-<div class="stripe-img" style="height:34px">badge: crypt-tv fanpage</div>
-</div>
+<div class="friends-badges" id="friends-badges"></div>
 </div>
 </aside>
 
 </div>
 
-<footer>© 2026 GRAVEYARD SHIFT — do not read alone. best experienced with the lights off. · <a href="admin.html" id="keeper-door" style="color:#555;text-decoration:none" title="keeper's entrance">☠</a></footer>
+<div id="gs-footer"></div>
 
 </div>
 </div>
 
-<script src="posts.js"></script>
+<script src="content/site.js"></script>
+<script src="content/posts.js"></script>
+<script src="assets/gs.js"></script>
 <script>
 (function () {
   "use strict";
+  GS.boot({ big: true, here: "home" });
 
-  /* ---- visitor counter: +1 per page load, persisted in localStorage ---- */
-  var count = 6661;
-  try {
-    count = parseInt(localStorage.getItem("gs_visitor_count") || "6660", 10) + 1;
-    localStorage.setItem("gs_visitor_count", String(count));
-  } catch (e) { /* storage unavailable — show default */ }
-  document.getElementById("visitor-count").textContent =
-    String(count).padStart(6, "0");
+  var $ = function (id) { return document.getElementById(id); };
+  var SITE = GS.SITE;
+  var posts = GS.posts();
 
-  /* ---- MIDI player toggle (visual only, per handoff prototype) ---- */
-  var playing = false;
-  var toggle = document.getElementById("midi-toggle");
-  document.getElementById("midi-transport").addEventListener("click", function () {
+  /* ---- featured: the newest post, or an invitation to write one ---- */
+  var feat = $("featured");
+  if (posts.length) {
+    var p = posts[0];
+    var card = GS.el("article", "featured");
+
+    if (p.image) {
+      var img = document.createElement("img");
+      img.src = p.image; img.alt = "";
+      img.style.cssText = "width:100%;height:220px;object-fit:cover;display:block";
+      card.appendChild(img);
+    }
+
+    var t = GS.el("div", "featured-title");
+    t.appendChild(GS.link("post.html?id=" + encodeURIComponent(p.id), p.title.toUpperCase()));
+    card.appendChild(t);
+
+    var sub = GS.subtitleFor(p);
+    if (sub) card.appendChild(GS.el("div", "card-sub", sub));
+
+    if (p.type === "review" && p.work && p.work.rating) {
+      var r = GS.el("div"); r.style.marginTop = "8px";
+      r.appendChild(GS.stars(p.work.rating));
+      card.appendChild(r);
+    }
+
+    var blurb = (p.type === "review" && p.work && p.work.verdict)
+      ? "“" + p.work.verdict + "”"
+      : GS.excerpt(p.body, 260);
+    card.appendChild(GS.el("div", "featured-body", blurb));
+
+    var meta = GS.el("div", "featured-meta");
+    meta.textContent = "by the keeper · " + GS.fmtDate(p.date) + " · " + p.cat + " · ";
+    meta.appendChild(GS.link("post.html?id=" + encodeURIComponent(p.id), "read more →"));
+    card.appendChild(meta);
+    feat.appendChild(card);
+  } else {
+    feat.appendChild(GS.emptyState(
+      "THE GRAVEYARD IS EMPTY",
+      "No tales buried yet. Open the keeper's entrance (☠ in the footer) and write your first one — or add it straight to content/posts.js."));
+  }
+
+  /* ---- recent posts: everything after the featured one ---- */
+  var list = $("post-list");
+  var recent = posts.slice(1, 9);
+  if (recent.length) {
+    recent.forEach(function (p) { list.appendChild(GS.row(p)); });
+  } else {
+    list.appendChild(GS.el("div", "gb-empty",
+      posts.length ? "only one tale so far. more will follow." : "nothing here yet."));
+  }
+
+  /* ---- categories, with live counts ---- */
+  var grid = $("cat-grid");
+  Object.keys(GS.CATS).forEach(function (key) {
+    var meta = GS.CATS[key];
+    var n = GS.byCat(key).length;
+    var a = GS.link("category.html?cat=" + encodeURIComponent(key), null, "cat-card");
+    a.appendChild(GS.el("div", "cat-name", meta.title.toLowerCase().replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); })));
+    a.appendChild(GS.el("div", "cat-sub", meta.sub));
+    a.appendChild(GS.el("div", "cat-count", n === 0 ? "empty" : n + (n === 1 ? " tale" : " tales")));
+    grid.appendChild(a);
+  });
+
+  /* ---- about blurb, from content/site.js ---- */
+  var about = SITE.about || {};
+  $("about-head").textContent = "◆ " + (about.heading || "ABOUT THE KEEPER") + " ◆";
+  GS.paragraphs(about.bio, $("about-bio"));
+  var photoHost = $("about-photo");
+  if (about.photo) {
+    var ap = document.createElement("img");
+    ap.className = "about-photo"; ap.src = about.photo; ap.alt = "the keeper";
+    photoHost.appendChild(ap);
+  } else {
+    var ph = GS.el("div", "stripe-img about-photo", "photo: site owner");
+    photoHost.appendChild(ph);
+  }
+
+  /* ---- friends list ---- */
+  var friends = SITE.friends || [];
+  if (friends.length) {
+    var fb = $("friends-badges");
+    friends.forEach(function (f) {
+      var url = GS.safeUrl(f.url);
+      if (!url) return;
+      fb.appendChild(GS.link(url, f.name));
+    });
+    $("friends").classList.remove("hidden");
+  }
+
+  /* ---- midi flavor (visual only — no audio wired up) ---- */
+  $("midi-track").textContent = SITE.midi || "dead_hallway.mid";
+  var playing = false, toggle = $("midi-toggle");
+  $("midi-transport").addEventListener("click", function () {
     playing = !playing;
     toggle.textContent = playing ? "⏸" : "▶";
   });
 
-  /* ---- guestbook: in-memory entries, newest first ---- */
-  var entries = [
-    { name: "anonymous", msg: "heard scratching after reading this at 2am. 10/10." },
-    { name: "a_believer_92", msg: "do NOT read the second story alone." }
-  ];
-  var list = document.getElementById("gb-entries");
-  var nameInput = document.getElementById("gb-name");
-  var msgInput = document.getElementById("gb-msg");
+  /* ---- visitor counter: per-browser kitsch, not a real metric ---- */
+  var count = 6661;
+  try {
+    count = parseInt(localStorage.getItem("gs_visitor_count") || "6660", 10) + 1;
+    localStorage.setItem("gs_visitor_count", String(count));
+  } catch (e) { /* storage unavailable — show the default */ }
+  $("visitor-count").textContent = String(count).padStart(6, "0");
 
-  function renderEntries() {
-    list.textContent = "";
-    entries.forEach(function (entry) {
-      var row = document.createElement("div");
-      row.className = "gb-entry";
-      row.appendChild(document.createTextNode("“" + entry.msg + "” — "));
-      var who = document.createElement("b");
-      who.textContent = entry.name;
-      row.appendChild(who);
-      list.appendChild(row);
-    });
-  }
+  /* ---- guestbook: in-memory only, and says so ---- */
+  if (SITE.guestbook !== false) {
+    $("guestbook").classList.remove("hidden");
+    var entries = [];
+    var gbList = $("gb-entries"), gbName = $("gb-name"), gbMsg = $("gb-msg");
 
-  function sign() {
-    var msg = msgInput.value.trim();
-    if (!msg) return;
-    entries.unshift({ name: nameInput.value.trim() || "anonymous", msg: msg });
-    nameInput.value = "";
-    msgInput.value = "";
-    renderEntries();
-  }
-
-  document.getElementById("gb-sign").addEventListener("click", sign);
-  msgInput.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") sign();
-  });
-
-  renderEntries();
-
-  /* ---- keeper's door: only shown when running locally (admin.html is not deployed) ---- */
-  var isLocal = location.protocol === "file:" || /^(localhost|127\.)/.test(location.hostname);
-  if (!isLocal) document.getElementById("keeper-door").style.display = "none";
-
-  /* ---- keeper's posts: published from admin.html, stored in localStorage.
-         window.GS_POSTS (optional posts.js) lets posts be "baked in" for the public site ---- */
-  var posts = [];
-  try { posts = JSON.parse(localStorage.getItem("gs_posts") || "null") || []; }
-  catch (e) { posts = []; }
-  if (!posts.length && window.GS_POSTS) posts = window.GS_POSTS;
-
-  function featurePost(post) {
-    document.getElementById("featured-img").textContent = "photo: (the keeper hasn't developed this one yet)";
-    document.getElementById("featured-title").textContent = post.title.toUpperCase();
-    var body = document.getElementById("featured-body");
-    body.textContent = "";
-    post.body.split(/\n\s*\n/).forEach(function (para, i) {
-      var p = document.createElement("div");
-      if (i > 0) p.style.marginTop = "10px";
-      p.textContent = para;
-      body.appendChild(p);
-    });
-    var fm = document.getElementById("featured-meta");
-    fm.textContent = "by the keeper · " + post.date + " · " + post.cat + " · ";
-    var more = document.createElement("a");
-    more.href = "post.html?id=" + encodeURIComponent(post.id);
-    more.style.fontSize = "12px";
-    more.textContent = "read more →";
-    fm.appendChild(more);
-  }
-
-  if (posts.length) {
-    var postList = document.getElementById("post-list");
-    // newest first in storage; insert in reverse so newest ends up on top
-    posts.slice().reverse().forEach(function (post) {
-      var row = document.createElement("div");
-      row.className = "post-row";
-      var link = document.createElement("a");
-      link.href = "post.html?id=" + encodeURIComponent(post.id);
-      link.textContent = post.title;
-      var meta = document.createElement("span");
-      meta.textContent = post.cat + " · " + post.date;
-      row.appendChild(link);
-      row.appendChild(meta);
-      postList.insertBefore(row, postList.firstChild);
-    });
-    featurePost(posts[0]); // newest post takes over the featured slot
+    function render() {
+      gbList.textContent = "";
+      if (!entries.length) {
+        gbList.appendChild(GS.el("div", "gb-empty", "no one has signed yet. be the first."));
+        return;
+      }
+      entries.forEach(function (entry) {
+        var e = GS.el("div", "gb-entry");
+        e.appendChild(document.createTextNode("“" + entry.msg + "” — "));
+        e.appendChild(GS.el("b", null, entry.name));
+        gbList.appendChild(e);
+      });
+    }
+    function sign() {
+      var msg = gbMsg.value.trim();
+      if (!msg) return;
+      entries.unshift({ name: gbName.value.trim() || "anonymous", msg: msg });
+      gbName.value = ""; gbMsg.value = "";
+      render();
+    }
+    $("gb-sign").addEventListener("click", sign);
+    gbMsg.addEventListener("keydown", function (e) { if (e.key === "Enter") sign(); });
+    render();
   }
 })();
 </script>

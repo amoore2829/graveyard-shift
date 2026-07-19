@@ -1,0 +1,68 @@
+name: Deploy the graveyard
+
+# Publishes the public site to GitHub Pages.
+#
+# The keeper's control panel (admin.html + assets/admin-core.js) is tracked
+# in this repo so it stays versioned and backed up, but it is stripped out
+# below so it is never served publicly. It is a local authoring tool.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble the public site
+        run: |
+          mkdir -p _site
+          cp -r . _site/staging
+          rm -rf _site/staging/.git _site/staging/.github _site/staging/_site
+
+          # keeper-only files never reach the public site
+          rm -f _site/staging/admin.html
+          rm -f _site/staging/assets/admin-core.js
+
+          # design source material isn't part of the site
+          rm -rf "_site/staging/Campy Horror Blog Design"
+
+          mv _site/staging/* _site/ 2>/dev/null || true
+          mv _site/staging/.nojekyll _site/ 2>/dev/null || true
+          rm -rf _site/staging
+
+      - name: Fail if any keeper file slipped through
+        run: |
+          if [ -e _site/admin.html ] || [ -e _site/assets/admin-core.js ]; then
+            echo "::error::admin files present in the deploy artifact"
+            exit 1
+          fi
+          echo "Publishing:"
+          find _site -type f | sort
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
