@@ -28,6 +28,7 @@
 <option value="">all types</option>
 <option value="review">reviews</option>
 <option value="pick">picks</option>
+<option value="art">art</option>
 <option value="post">writing</option>
 </select>
 </div>
@@ -79,6 +80,7 @@
     var bits = [p.title, p.cat, p.type, p.body];
     if (p.work)   bits.push(p.work.creator, p.work.year, p.work.verdict);
     if (p.source) bits.push(p.source.author);
+    if (p.art)    bits.push(p.art.artist, p.art.year);
     return { post: p, hay: bits.filter(Boolean).join(" ").toLowerCase() };
   });
 

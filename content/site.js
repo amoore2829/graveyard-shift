@@ -9,6 +9,11 @@ window.GS_SITE = {
   tagline: "a zine for the sleep-deprived and superstitious",
   since:   "2026",          /* shown in the about page ledger */
 
+  /* "default" — blood red and acid green, lights off.
+     "summerween" — Halloween in July: watermelon, rind green, warm dusk.
+     Flip it from the admin panel, or just edit this line. */
+  theme:   "default",
+
   /* The about page + homepage blurb. Blank line = new paragraph. */
   about: {
     heading: "ABOUT THE KEEPER",

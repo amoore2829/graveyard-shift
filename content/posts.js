@@ -43,6 +43,54 @@
 
 window.GS_POSTS = [
   {
+    "id": "2026-07-20-grim-reaper-saxophone",
+    "type": "art",
+    "cat": "art",
+    "title": "The Grim Reaper Plays Us Out",
+    "date": "2026-07-20",
+    "image": "assets/art/grim-reaper-saxophone.jpg",
+    "art": {
+      "artist": "Maxis / EA — The Sims",
+      "url": "",
+      "via": "https://www.pinterest.com/pin/913878949403200458/",
+      "year": null
+    },
+    "body": "",
+    "draft": false
+  },
+  {
+    "id": "2026-07-20-whisper-halloween",
+    "type": "art",
+    "cat": "art",
+    "title": "Whisper Dressed for the Occasion",
+    "date": "2026-07-20",
+    "image": "assets/art/whisper-halloween.jpg",
+    "art": {
+      "artist": "Level-5 — Yo-kai Watch",
+      "url": "",
+      "via": "https://www.pinterest.com/pin/913878949396353588/",
+      "year": null
+    },
+    "body": "",
+    "draft": false
+  },
+  {
+    "id": "2026-07-20-spooky-fruit",
+    "type": "art",
+    "cat": "art",
+    "title": "Spooky Fruit",
+    "date": "2026-07-20",
+    "image": "assets/art/skeleton-fruit-snacks.jpg",
+    "art": {
+      "artist": "Sunkist Fun Fruits commercial",
+      "url": "",
+      "via": "",
+      "year": null
+    },
+    "body": "",
+    "draft": false
+  },
+  {
     "id": "2026-07-19-my-wife-has-been-peeking-at-me",
     "type": "pick",
     "cat": "creepypasta",

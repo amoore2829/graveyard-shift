@@ -38,6 +38,8 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 .grp{border:1px dashed #444;padding:12px;display:flex;flex-direction:column;gap:10px}
 .grp-label{color:#39ff14;font-family:'Special Elite',monospace;font-size:11px;letter-spacing:2px}
 .grp.pick .grp-label{color:#ffb700}
+.grp.art .grp-label{color:#c77dff}
+.grp.art{border-color:#3a2a4a}
 .checkrow{display:flex;align-items:center;gap:8px;color:#888;font-size:12px}
 .checkrow input{width:auto}
 
@@ -62,6 +64,16 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 .statbox .v{background:#000;color:#ff1a1a;font-family:'VT323',monospace;font-size:30px;letter-spacing:5px;margin-top:4px;padding:4px}
 .notebox{border:1px dashed #444;padding:12px;color:#888;font-size:11px;line-height:1.6}
 .badge{font-size:10px;text-align:center;padding:6px;border:1px solid #39ff14;color:#39ff14}
+
+/* season switch */
+.themerow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.switch{position:relative;display:inline-block;width:56px;height:28px;flex:none}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.slider{position:absolute;inset:0;cursor:pointer;background:#1a0505;border:1px solid var(--primary);transition:.2s}
+.slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:var(--primary);transition:.2s}
+.switch input:checked + .slider{background:#2b1220;border-color:#ff4d6d}
+.switch input:checked + .slider:before{transform:translateX(28px);background:#ff4d6d}
+.switch input:focus-visible + .slider{outline:2px solid var(--secondary)}
 
 .dirty{border:1px solid #ffb700;background:#1a1400;color:#ffb700;padding:10px 12px;font-size:12px;line-height:1.6}
 .clean{border:1px solid #39ff14;color:#39ff14;padding:10px 12px;font-size:12px}
@@ -126,6 +138,7 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 <select id="p-type">
 <option value="review">review — something I rated</option>
 <option value="pick">pick — someone else's story</option>
+<option value="art">art — a piece for the gallery</option>
 <option value="post">post — my own writing</option>
 </select>
 </div>
@@ -138,14 +151,25 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 <option value="books">books</option>
 <option value="creepypasta">creepypasta</option>
 <option value="movies">movies</option>
+<option value="shows">shows</option>
 <option value="video games">video games</option>
+<option value="art">art</option>
+<option value="spooky season">spooky season</option>
+</select>
+</div>
+<div id="row-sub" class="hidden">
+<label>WHICH HOLIDAY</label>
+<select id="p-sub">
+<option value="">— general —</option>
+<option value="halloween">halloween</option>
+<option value="summerween">summerween</option>
 </select>
 </div>
 <div>
 <label>DATE</label>
 <input id="p-date" type="date">
 </div>
-<div>
+<div id="row-image">
 <label>COVER IMAGE (optional)</label>
 <input id="p-image" placeholder="assets/covers/hol.jpg">
 </div>
@@ -201,6 +225,49 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 </div>
 </div>
 
+<!-- art-only fields -->
+<div class="grp art hidden" id="grp-art">
+<div class="grp-label">◆ HANG IT IN THE GALLERY ◆</div>
+<div class="compose-row">
+<div style="flex:2">
+<label>ARTIST (required)</label>
+<input id="a-artist" maxlength="120" placeholder="Zdzisław Beksiński">
+</div>
+<div>
+<label>YEAR</label>
+<input id="a-year" type="number" min="1000" max="2999" placeholder="1978">
+</div>
+</div>
+<div class="compose-row">
+<div>
+<label>LINK TO THE ARTIST</label>
+<input id="a-url" placeholder="https://... their own site or socials">
+</div>
+<div>
+<label>WHERE YOU FOUND IT</label>
+<input id="a-via" placeholder="https://... pinterest, tumblr, wherever">
+</div>
+</div>
+<div style="color:#666;font-size:10px;line-height:1.5;margin-top:-4px">
+These are different facts. An aggregator link is where you saw it — it usually isn't the creator's page.
+</div>
+<div>
+<label>IMAGE FILE (required)</label>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+<input type="file" id="a-file" accept="image/*" style="flex:1;min-width:180px">
+<span style="color:#666;font-size:11px">picks the filename — you still save the file yourself</span>
+</div>
+<div style="color:#888;font-size:11px;line-height:1.6;margin-top:8px">
+Save the image into <span style="color:#c77dff">assets/art/</span> in the project folder, then choose it above
+to fill in the path. Browsers can't copy files for me — the picker only reads the name.
+</div>
+<div id="a-preview" class="hidden" style="margin-top:10px">
+<img id="a-preview-img" alt="" style="max-width:100%;max-height:220px;display:block;border:1px solid #333">
+<div id="a-preview-meta" style="color:#666;font-size:11px;margin-top:4px"></div>
+</div>
+</div>
+</div>
+
 <div>
 <label id="body-label">THE TALE ITSELF</label>
 <textarea id="p-body" placeholder="it was a dark and stormy night... (blank line = new paragraph)"></textarea>
@@ -223,6 +290,35 @@ label{color:#888;font-size:11px;letter-spacing:1px;display:block;margin-bottom:4
 <div class="section-head">◆ YOUR BURIED POSTS ◆</div>
 <div id="post-list"></div>
 <div id="no-posts" style="color:#666;font-size:12px">nothing buried yet. the graveyard awaits your first tale.</div>
+</div>
+
+<div style="margin-top:26px;border:1px dashed var(--art);padding:16px">
+<div class="section-head">◆ SEASON OF THE SITE ◆</div>
+<div class="themerow">
+<label class="switch">
+<input type="checkbox" id="theme-switch">
+<span class="slider"></span>
+</label>
+<div>
+<div id="theme-name" style="color:var(--primary);font-size:14px"></div>
+<div id="theme-desc" style="color:#888;font-size:11px;line-height:1.5;margin-top:2px"></div>
+</div>
+</div>
+<div style="color:#888;font-size:12px;line-height:1.6;margin-top:12px">
+Flipping this repaints the whole site — every page, same fonts, same layout.
+The panel around you changes too, so you can see it before anyone else does.
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+<button class="btn" id="theme-save" type="button">🎨 SAVE &amp; GENERATE content/site.js →</button>
+</div>
+<div id="theme-wrap" class="hidden" style="margin-top:12px">
+<textarea id="theme-out" readonly style="width:100%;height:150px;font-size:11px"></textarea>
+<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+<button class="btn" id="theme-copy" type="button">📋 COPY IT</button>
+<button class="btn" id="theme-dl" type="button">💾 DOWNLOAD site.js</button>
+</div>
+<div class="msg ok" id="theme-msg" style="margin-top:6px"></div>
+</div>
 </div>
 
 <div style="margin-top:26px;border:1px dashed #39ff14;padding:16px">
@@ -361,18 +457,48 @@ this lock is period-appropriate theatre. the secret word is only lightly obfusca
     var t = $("p-type").value;
     $("grp-review").classList.toggle("hidden", t !== "review");
     $("grp-pick").classList.toggle("hidden", t !== "pick");
+    $("grp-art").classList.toggle("hidden", t !== "art");
     $("body-label").textContent =
       t === "review" ? "WHY — THE REVIEW ITSELF" :
-      t === "pick"   ? "WHY THIS ONE STUCK WITH YOU" :
+      t === "pick"   ? "WHY THIS ONE STUCK WITH YOU (optional)" :
+      t === "art"    ? "A NOTE ABOUT THE PIECE (optional)" :
                        "THE TALE ITSELF";
+    /* art pieces carry their image in the gallery field, not the cover field */
+    $("row-image").classList.toggle("hidden", t === "art");
+    if (t === "art") $("p-cat").value = "art";
+    syncSubField();
   }
   $("p-type").addEventListener("change", syncTypeFields);
+
+  /* Only sections that actually split show a subcategory picker. */
+  function syncSubField() {
+    var has = A.subsFor($("p-cat").value).length > 0;
+    $("row-sub").classList.toggle("hidden", !has);
+    if (!has) $("p-sub").value = "";
+  }
+  $("p-cat").addEventListener("change", syncSubField);
+
+  /* The picker can only tell us a filename — browsers can't copy the file
+     into the project. So we fill the path it will have once it's saved,
+     and preview the chosen file so mistakes are obvious. */
+  $("a-file").addEventListener("change", function () {
+    var f = this.files && this.files[0];
+    if (!f) return;
+    $("p-image").value = "assets/art/" + f.name;
+    var img = $("a-preview-img");
+    if (img.src && img.src.indexOf("blob:") === 0) URL.revokeObjectURL(img.src);
+    img.src = URL.createObjectURL(f);
+    $("a-preview-meta").textContent =
+      "assets/art/" + f.name + "  ·  " + Math.round(f.size / 1024) + " KB";
+    $("a-preview").classList.remove("hidden");
+  });
 
   function readForm() {
     return A.normalize({
       id:    editingId,
       type:  $("p-type").value,
       cat:   $("p-cat").value,
+      sub:   $("p-sub").value,
       title: $("p-title").value,
       date:  $("p-date").value,
       image: $("p-image").value,
@@ -380,18 +506,23 @@ this lock is period-appropriate theatre. the secret word is only lightly obfusca
       body:  $("p-body").value,
       work:   { creator: $("w-creator").value, year: $("w-year").value,
                 rating: $("w-rating").value, verdict: $("w-verdict").value },
-      source: { author: $("s-author").value, url: $("s-url").value }
+      source: { author: $("s-author").value, url: $("s-url").value },
+      art:    { artist: $("a-artist").value, url: $("a-url").value,
+                via: $("a-via").value, year: $("a-year").value }
     }, working.map(function (p) { return p.id; }));
   }
 
   function clearForm() {
     editingId = null;
-    ["p-title", "p-image", "p-body", "w-creator", "w-year", "w-verdict", "s-author", "s-url"]
+    ["p-title", "p-image", "p-body", "w-creator", "w-year", "w-verdict",
+     "s-author", "s-url", "a-artist", "a-url", "a-via", "a-year", "a-file"]
       .forEach(function (id) { $(id).value = ""; });
     $("w-rating").value = "";
+    $("a-preview").classList.add("hidden");
     $("p-draft").checked = false;
     $("p-date").value = A.todayISO();
     $("p-type").value = "review";
+    $("p-sub").value = "";
     $("compose").classList.remove("editing");
     $("compose-head").innerHTML = '◆ RAISE A NEW POST <span class="blinker" style="color:#ff1a1a">▮</span> ◆';
     $("save").textContent = "⚰ BURY THIS TALE →";
@@ -406,17 +537,30 @@ this lock is period-appropriate theatre. the secret word is only lightly obfusca
     $("p-title").value = post.title;
     $("p-type").value  = post.type;
     $("p-cat").value   = post.cat;
+    $("p-sub").value   = post.sub || "";
     $("p-date").value  = post.date;
     $("p-image").value = post.image || "";
     $("p-body").value  = post.body;
     $("p-draft").checked = !!post.draft;
-    var w = post.work || {}, s = post.source || {};
+    var w = post.work || {}, s = post.source || {}, ar = post.art || {};
     $("w-creator").value = w.creator || "";
     $("w-year").value    = w.year != null ? w.year : "";
     $("w-rating").value  = w.rating != null ? String(w.rating) : "";
     $("w-verdict").value = w.verdict || "";
     $("s-author").value  = s.author || "";
     $("s-url").value     = s.url || "";
+    $("a-artist").value  = ar.artist || "";
+    $("a-url").value     = ar.url || "";
+    $("a-via").value     = ar.via || "";
+    $("a-year").value    = ar.year != null ? ar.year : "";
+    /* show the already-saved image so editing an art post isn't blind */
+    if (post.type === "art" && post.image) {
+      $("a-preview-img").src = post.image;
+      $("a-preview-meta").textContent = post.image;
+      $("a-preview").classList.remove("hidden");
+    } else {
+      $("a-preview").classList.add("hidden");
+    }
     $("compose").classList.add("editing");
     $("compose-head").textContent = "◆ EDITING: " + post.title + " ◆";
     $("save").textContent = "✎ SAVE CHANGES →";
@@ -552,6 +696,57 @@ this lock is period-appropriate theatre. the secret word is only lightly obfusca
     saveWorking(); clearForm(); render();
   });
 
+  /* ---------- season switch ----------
+     The theme lives in content/site.js so it applies to the published
+     site, not just this browser. Flipping repaints the panel immediately
+     as a preview; saving writes the file you commit. */
+  var SITE_BASE = window.GS_SITE || {};
+  var siteDraft = JSON.parse(JSON.stringify(SITE_BASE));
+
+  var THEME_INFO = {
+    "default":    { name: "GRAVEYARD SHIFT",
+                    desc: "blood red, acid green, lights off. the usual." },
+    "summerween": { name: "SUMMERWEEN 🍉",
+                    desc: "halloween in july — watermelon, rind green, warm summer dusk." }
+  };
+
+  function applyTheme(name) {
+    document.documentElement.setAttribute("data-theme", name);
+    $("theme-name").textContent = THEME_INFO[name].name;
+    $("theme-desc").textContent = THEME_INFO[name].desc;
+  }
+
+  $("theme-switch").addEventListener("change", function () {
+    siteDraft.theme = this.checked ? "summerween" : "default";
+    applyTheme(siteDraft.theme);
+    $("theme-wrap").classList.add("hidden");   /* stale output, hide it */
+  });
+
+  $("theme-save").addEventListener("click", function () {
+    $("theme-out").value = A.serializeSite(siteDraft);
+    $("theme-wrap").classList.remove("hidden");
+    $("theme-msg").textContent = "save this over content/site.js, then commit.";
+  });
+  $("theme-copy").addEventListener("click", function () {
+    var out = $("theme-out");
+    out.select();
+    var done = function () { $("theme-msg").textContent = "📋 copied — paste it into content/site.js."; };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out.value).then(done, function () { document.execCommand("copy"); done(); });
+    } else { document.execCommand("copy"); done(); }
+  });
+  $("theme-dl").addEventListener("click", function () {
+    var blob = new Blob([$("theme-out").value], { type: "text/javascript" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "site.js";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    $("theme-msg").textContent = "💾 downloaded — save it over content/site.js, then commit.";
+  });
+
   /* ---------- export ---------- */
   $("export-gen").addEventListener("click", function () {
     $("export-out").value = A.serialize(working);
@@ -580,6 +775,9 @@ this lock is period-appropriate theatre. the secret word is only lightly obfusca
 
   /* ---------- boot ---------- */
   function boot() {
+    var t = THEME_INFO[siteDraft.theme] ? siteDraft.theme : "default";
+    $("theme-switch").checked = (t === "summerween");
+    applyTheme(t);
     loadWorking();
     clearForm();
     render();

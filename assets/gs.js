@@ -9,18 +9,55 @@ window.GS = (function () {
 
   var SITE = window.GS_SITE || {};
 
+  /* ---------- themes ----------
+     Colours live in gs.css as custom properties; this only carries the
+     handful of strings CSS can't set. Flipped from the admin panel. */
+  var THEMES = {
+    "default": {
+      icon: "🕯",
+      construction: "SECTION UNDER CONSTRUCTION",
+      footer: "do not read alone. best experienced with the lights off."
+    },
+    "summerween": {
+      icon: "🍉",
+      construction: "STAND UNDER CONSTRUCTION",
+      footer: "do not read alone. best experienced after sunset, porch light on."
+    }
+  };
+
+  var themeName = THEMES[SITE.theme] ? SITE.theme : "default";
+  var THEME = THEMES[themeName];
+
+  /* Set before first paint so nothing flashes the wrong palette. */
+  if (document.documentElement) {
+    document.documentElement.setAttribute("data-theme", themeName);
+  }
+
   var CATS = {
     "books":       { title: "BOOKS",       sub: "tomes that bite back" },
     "creepypasta": { title: "CREEPYPASTA", sub: "copy-pasted nightmares" },
     "movies":      { title: "MOVIES",      sub: "films best watched through your fingers" },
-    "video games": { title: "VIDEO GAMES", sub: "haunted cartridges & cursed saves" }
+    "shows":       { title: "SHOWS",       sub: "series to fall asleep to, badly" },
+    "video games": { title: "VIDEO GAMES", sub: "haunted cartridges & cursed saves" },
+    "art":         { title: "ART",         sub: "things best not hung above the bed" },
+    "spooky season": {
+      title: "SPOOKY SEASON",
+      sub:   "the calendar's two best holidays",
+      subs:  {
+        "halloween":  { title: "HALLOWEEN",  sub: "october's own" },
+        "summerween": { title: "SUMMERWEEN", sub: "june 22nd. bring your own watermelon." }
+      }
+    }
   };
 
   var NAV = [
     { href: "category.html?cat=books",       label: "books",       key: "books" },
     { href: "category.html?cat=creepypasta", label: "creepypasta", key: "creepypasta" },
     { href: "category.html?cat=movies",      label: "movies",      key: "movies" },
+    { href: "category.html?cat=shows",       label: "shows",       key: "shows" },
     { href: "category.html?cat=video+games", label: "video games", key: "video games" },
+    { href: "category.html?cat=art",         label: "art",         key: "art" },
+    { href: "category.html?cat=spooky+season", label: "spooky season", key: "spooky season" },
     { href: "reviews.html",                  label: "reviews",     key: "reviews" },
     { href: "archive.html",                  label: "archive",     key: "archive" },
     { href: "about.html",                    label: "about",       key: "about" }
@@ -88,9 +125,26 @@ window.GS = (function () {
       .sort(sortNewest);
   }
 
-  function byCat(cat) {
+  function byCat(cat, sub) {
     var c = String(cat || "").toLowerCase();
-    return posts().filter(function (p) { return String(p.cat || "").toLowerCase() === c; });
+    var s = String(sub || "").toLowerCase();
+    return posts().filter(function (p) {
+      if (String(p.cat || "").toLowerCase() !== c) return false;
+      return !s || String(p.sub || "").toLowerCase() === s;
+    });
+  }
+
+  /* The subcategory map for a section, or null if it doesn't split. */
+  function subsFor(cat) {
+    var meta = CATS[String(cat || "").toLowerCase()];
+    return (meta && meta.subs) || null;
+  }
+
+  /* Display name for a post's subcategory, e.g. "summerween" -> "SUMMERWEEN". */
+  function subTitle(cat, sub) {
+    var subs = subsFor(cat);
+    var key = String(sub || "").toLowerCase();
+    return (subs && subs[key] && subs[key].title) || "";
   }
 
   function byId(id) {
@@ -151,6 +205,10 @@ window.GS = (function () {
     if (post.type === "pick" && post.source && post.source.author) {
       return "originally by " + post.source.author;
     }
+    if (post.type === "art" && post.art) {
+      return [post.art.artist ? "by " + post.art.artist : "", post.art.year]
+             .filter(Boolean).join(" · ");
+    }
     return "";
   }
 
@@ -199,6 +257,16 @@ window.GS = (function () {
     meta.appendChild(link("category.html?cat=" + encodeURIComponent(String(post.cat || "").toLowerCase()),
                           post.cat, null));
 
+    if (post.sub) {
+      var st = subTitle(post.cat, post.sub);
+      if (st) {
+        meta.appendChild(link(
+          "category.html?cat=" + encodeURIComponent(String(post.cat).toLowerCase()) +
+          "&sub=" + encodeURIComponent(post.sub),
+          st.toLowerCase(), null));
+      }
+    }
+
     /* A pick is a recommendation — let people go straight to the story
        instead of forcing a click through a page that just points elsewhere. */
     if (post.type === "pick" && post.source) {
@@ -216,6 +284,61 @@ window.GS = (function () {
     return wrap;
   }
 
+  /* Gallery tile. For art the image is the point, so it leads at full
+     width and the credit sits underneath. Clicking opens the full file. */
+  function artTile(post) {
+    var fig = el("figure", "art-tile");
+
+    var frame = link(post.image || "#", null, "art-frame");
+    frame.target = "_blank";
+    frame.rel = "noopener noreferrer";
+    var img = document.createElement("img");
+    img.className = "art-img";
+    img.src = post.image;
+    img.alt = post.title || "";
+    img.loading = "lazy";
+    frame.appendChild(img);
+    fig.appendChild(frame);
+
+    var cap = el("figcaption", "art-cap");
+    cap.appendChild(el("div", "art-title", post.title));
+
+    var a = post.art || {};
+    if (a.artist) {
+      var credit = el("div", "art-artist");
+      credit.appendChild(document.createTextNode("by "));
+      var u = safeUrl(a.url);
+      if (u) {
+        var who = link(u, a.artist);
+        who.target = "_blank";
+        who.rel = "noopener noreferrer";
+        credit.appendChild(who);
+      } else {
+        credit.appendChild(document.createTextNode(a.artist));
+      }
+      if (a.year) credit.appendChild(document.createTextNode(" · " + a.year));
+      cap.appendChild(credit);
+    }
+
+    /* "found via" is deliberately separate from the artist link — an
+       aggregator is where you saw it, not who made it. */
+    var via = safeUrl(a.via);
+    if (via) {
+      var v = el("div", "art-via");
+      v.appendChild(document.createTextNode("found via "));
+      var vl = link(via, "source");
+      vl.target = "_blank";
+      vl.rel = "noopener noreferrer";
+      v.appendChild(vl);
+      cap.appendChild(v);
+    }
+
+    if (post.body) cap.appendChild(el("div", "art-note", excerpt(post.body, 220)));
+
+    fig.appendChild(cap);
+    return fig;
+  }
+
   /* The compact one-line row used on the homepage. */
   function row(post) {
     var r = el("div", "post-row");
@@ -226,7 +349,7 @@ window.GS = (function () {
 
   function emptyState(label, note) {
     var e = el("div", "empty");
-    e.appendChild(el("div", "label", "🕯 " + label + " 🕯"));
+    e.appendChild(el("div", "label", THEME.icon + " " + label + " " + THEME.icon));
     var img = document.createElement("img");
     img.src = "assets/resetti.gif";
     img.alt = "a mole, digging";
@@ -278,7 +401,7 @@ window.GS = (function () {
     var f = el("footer");
     f.appendChild(document.createTextNode(
       "© " + new Date().getFullYear() + " " + (SITE.title || "GRAVEYARD SHIFT") +
-      " — do not read alone. best experienced with the lights off. · "));
+      " — " + THEME.footer + " · "));
     var door = link("admin.html", "☠");
     door.style.cssText = "color:#555;text-decoration:none";
     door.title = "keeper's entrance";
@@ -297,11 +420,13 @@ window.GS = (function () {
 
   return {
     SITE: SITE, CATS: CATS, isLocal: isLocal,
+    THEME: THEME, THEMES: THEMES, themeName: themeName,
     el: el, link: link, safeUrl: safeUrl,
     posts: posts, byCat: byCat, byId: byId, allPosts: allPosts,
+    subsFor: subsFor, subTitle: subTitle,
     fmtDate: fmtDate, year: year, stars: starsEl, paragraphs: paragraphs,
     excerpt: excerpt, subtitleFor: subtitleFor,
-    card: card, row: row, thumb: thumb, emptyState: emptyState,
+    card: card, row: row, artTile: artTile, thumb: thumb, emptyState: emptyState,
     boot: boot
   };
 })();

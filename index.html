@@ -60,7 +60,7 @@
 </div>
 
 <div class="construction">
-<div class="construction-label">🕯 SECTION UNDER CONSTRUCTION 🕯</div>
+<div class="construction-label" id="construction-label"></div>
 <img src="assets/resetti.gif" alt="a mole, digging">
 </div>
 
@@ -189,6 +189,10 @@
     });
     $("friends").classList.remove("hidden");
   }
+
+  /* ---- theme-aware sidebar flavor ---- */
+  $("construction-label").textContent =
+    GS.THEME.icon + " " + GS.THEME.construction + " " + GS.THEME.icon;
 
   /* ---- midi flavor (visual only — no audio wired up) ---- */
   $("midi-track").textContent = SITE.midi || "dead_hallway.mid";

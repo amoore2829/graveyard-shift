@@ -90,6 +90,45 @@
     c.appendChild(box);
   }
 
+  /* ---- art: the piece itself, then who made it ---- */
+  if (post.type === "art" && post.image) {
+    var frame = GS.el("figure", "art-full");
+    var full = GS.link(post.image, null);
+    full.target = "_blank"; full.rel = "noopener noreferrer";
+    var im = document.createElement("img");
+    im.src = post.image; im.alt = post.title || "";
+    full.appendChild(im);
+    frame.appendChild(full);
+    c.appendChild(frame);
+
+    var a = post.art || {};
+    if (a.artist || a.via) {
+      var credit = GS.el("div", "art-credit");
+      credit.appendChild(GS.el("span", "l", "CREDIT"));
+      if (a.artist) {
+        credit.appendChild(document.createTextNode(a.artist + (a.year ? " · " + a.year : "") + ". "));
+      }
+      var au = GS.safeUrl(a.url);
+      if (au) {
+        var more = GS.link(au, "see more of their work →");
+        more.target = "_blank"; more.rel = "noopener noreferrer";
+        credit.appendChild(more);
+      }
+      var vu = GS.safeUrl(a.via);
+      if (vu) {
+        var vrow = GS.el("div");
+        vrow.style.marginTop = "6px";
+        vrow.appendChild(document.createTextNode("Found via "));
+        var vl = GS.link(vu, "this source");
+        vl.target = "_blank"; vl.rel = "noopener noreferrer";
+        vrow.appendChild(vl);
+        vrow.appendChild(document.createTextNode(" — not necessarily the original upload."));
+        credit.appendChild(vrow);
+      }
+      c.appendChild(credit);
+    }
+  }
+
   /* ---- creepypasta credit block ---- */
   if (post.type === "pick" && post.source) {
     var s = GS.el("div", "sourcebox");

@@ -18,6 +18,7 @@
 <div class="content">
 <div class="page-title" id="cat-title">…</div>
 <div class="page-sub" id="cat-sub"></div>
+<div class="subtabs hidden" id="subtabs"></div>
 
 <div class="controls hidden" id="controls">
 <label for="f-type">SHOW</label>
@@ -25,6 +26,7 @@
 <option value="">everything</option>
 <option value="review">reviews only</option>
 <option value="pick">picks only</option>
+<option value="art">art only</option>
 <option value="post">writing only</option>
 </select>
 <label for="f-sort">SORT</label>
@@ -37,7 +39,7 @@
 </div>
 
 <div class="result-count hidden" id="count"></div>
-<div class="card-list" id="cat-posts"></div>
+<div id="cat-posts"></div>
 <div id="cat-empty"></div>
 </div>
 
@@ -52,25 +54,52 @@
 <script>
 (function () {
   "use strict";
-  var cat = (new URLSearchParams(location.search).get("cat") || "").toLowerCase();
+  var params = new URLSearchParams(location.search);
+  var cat = (params.get("cat") || "").toLowerCase();
+  var sub = (params.get("sub") || "").toLowerCase();
   var meta = GS.CATS[cat] || { title: "LOST SECTION", sub: "this wing of the graveyard doesn't exist… yet" };
+  var subs = GS.subsFor(cat);
+  if (sub && !(subs && subs[sub])) sub = "";           /* unknown sub → whole section */
+  var subMeta = sub && subs ? subs[sub] : null;
 
-  GS.boot({ here: cat, marquee: "browsing the " + meta.title.toLowerCase() + " wing — mind the loose flagstones" });
+  GS.boot({ here: cat, marquee: "browsing the " + (subMeta || meta).title.toLowerCase() +
+                                " wing — mind the loose flagstones" });
 
-  document.title = "GRAVEYARD SHIFT — " + meta.title.toLowerCase();
-  document.getElementById("cat-title").textContent = "◆ " + meta.title + " ◆";
-  document.getElementById("cat-sub").textContent = meta.sub;
+  document.title = "GRAVEYARD SHIFT — " + (subMeta || meta).title.toLowerCase();
+  document.getElementById("cat-title").textContent = "◆ " + (subMeta || meta).title + " ◆";
+  document.getElementById("cat-sub").textContent = (subMeta || meta).sub;
 
-  var all = GS.byCat(cat);
+  /* subcategory tabs, when the section splits */
+  if (subs) {
+    var tabs = document.getElementById("subtabs");
+    var mkTab = function (key, label) {
+      var href = "category.html?cat=" + encodeURIComponent(cat) +
+                 (key ? "&sub=" + encodeURIComponent(key) : "");
+      var a = GS.link(href, label, "subtab" + (sub === key ? " here" : ""));
+      var n = GS.byCat(cat, key).length;
+      if (n) a.appendChild(GS.el("span", "subtab-n", " " + n));
+      return a;
+    };
+    tabs.appendChild(mkTab("", "all"));
+    Object.keys(subs).forEach(function (k) {
+      tabs.appendChild(mkTab(k, subs[k].title.toLowerCase()));
+    });
+    tabs.classList.remove("hidden");
+  }
+
+  var all = GS.byCat(cat, sub);
+  var isGallery = cat === "art";
   var list = document.getElementById("cat-posts");
   var countEl = document.getElementById("count");
 
   if (!all.length) {
     document.getElementById("cat-empty").appendChild(GS.emptyState(
-      "NOTHING BURIED UNDER THIS STONE YET",
-      GS.CATS[cat]
-        ? "The keeper is still digging. Write the first " + cat + " entry from the control panel."
-        : "No such section. Try the nav above."));
+      isGallery ? "NOTHING HANGING ON THESE WALLS YET" : "NOTHING BURIED UNDER THIS STONE YET",
+      isGallery
+        ? "The gallery is empty. Drop an image into assets/art/ and add it from the control panel."
+        : GS.CATS[cat]
+          ? "The keeper is still digging. Write the first " + cat + " entry from the control panel."
+          : "No such section. Try the nav above."));
     return;
   }
 
@@ -98,11 +127,23 @@
     });
 
     list.textContent = "";
-    countEl.textContent = shown.length + (shown.length === 1 ? " tale" : " tales");
+    var noun = isGallery ? (shown.length === 1 ? " piece" : " pieces")
+                         : (shown.length === 1 ? " tale"  : " tales");
+    countEl.textContent = shown.length + noun;
     if (!shown.length) {
       list.appendChild(GS.el("div", "gb-empty", "nothing matches that filter."));
       return;
     }
+
+    /* the art wing hangs its pieces instead of listing them */
+    if (isGallery) {
+      list.className = "gallery";
+      shown.forEach(function (p) {
+        list.appendChild(p.image ? GS.artTile(p) : GS.card(p));
+      });
+      return;
+    }
+    list.className = "card-list";
     shown.forEach(function (p) { list.appendChild(GS.card(p)); });
   }
 
