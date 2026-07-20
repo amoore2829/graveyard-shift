@@ -43,6 +43,22 @@
 
 window.GS_POSTS = [
   {
+    "id": "2026-07-20-calling-all-creeps",
+    "type": "art",
+    "cat": "art",
+    "title": "Calling All Creeps!",
+    "date": "2026-07-20",
+    "image": "assets/art/calling-all-creeps.webp",
+    "art": {
+      "artist": "Tim Jacobus — Scholastic",
+      "url": "",
+      "via": "",
+      "year": 1996
+    },
+    "body": "",
+    "draft": false
+  },
+  {
     "id": "2026-07-20-grim-reaper-saxophone",
     "type": "art",
     "cat": "art",
