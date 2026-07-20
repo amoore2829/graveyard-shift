@@ -194,98 +194,94 @@
   $("construction-label").textContent =
     GS.THEME.icon + " " + GS.THEME.construction + " " + GS.THEME.icon;
 
- /* ---- Cross-Page Continuous Audio Player ---- */
-(function setupContinuousAudio() {
-  var playlist = [
-    {
-      name: "Toccata and Fugue in D Minor.mp3",
-      src: "assets/music/Toccata and Fugue in D Minor, BWV 565.mp3"
-    },
-    {
-      name: "Monster Mash.mp3",
-      src: "assets/music/Monster Mash - Monster Mash.mp3"
+  /* ---- Cross-Page Continuous Audio Player ---- */
+  (function setupContinuousAudio() {
+    var playlist = [
+      {
+        name: "Toccata and Fugue in D Minor.mp3",
+        src: "assets/music/Toccata and Fugue in D Minor, BWV 565.mp3"
+      },
+      {
+        name: "Monster Mash.mp3",
+        src: "assets/music/Monster Mash - Monster Mash.mp3"
+      }
+    ];
+
+    var trackEl = $("midi-track");
+    var transportEl = $("midi-transport");
+    var toggleEl = $("midi-toggle");
+
+    if (!trackEl || !transportEl || !toggleEl) return;
+
+    // Restore previous playback state from sessionStorage
+    var savedIndex = parseInt(sessionStorage.getItem("gs_audio_index") || "0", 10);
+    var savedTime = parseFloat(sessionStorage.getItem("gs_audio_time") || "0");
+    var shouldPlay = sessionStorage.getItem("gs_audio_playing") !== "false";
+
+    var currentIndex = isNaN(savedIndex) ? 0 : savedIndex;
+    var audio = new Audio();
+
+    function loadTrack(index) {
+      currentIndex = index;
+      audio.src = playlist[currentIndex].src;
+      trackEl.textContent = playlist[currentIndex].name;
+      sessionStorage.setItem("gs_audio_index", String(currentIndex));
     }
-  ];
 
-  var $ = function (id) { return document.getElementById(id); };
-  var trackEl = $("midi-track");
-  var transportEl = $("midi-transport");
-  var toggleEl = $("midi-toggle");
+    loadTrack(currentIndex);
+    audio.currentTime = isNaN(savedTime) ? 0 : savedTime;
 
-  if (!trackEl || !transportEl || !toggleEl) return;
+    function playAudio() {
+      audio.play().then(function () {
+        toggleEl.textContent = "⏸";
+        sessionStorage.setItem("gs_audio_playing", "true");
+      }).catch(function (err) {
+        // Handle browser autoplay policy restriction
+        toggleEl.textContent = "▶";
+      });
+    }
 
-  // 1. Restore previous audio state or start fresh
-  var savedIndex = parseInt(sessionStorage.getItem("gs_audio_index") || "0", 10);
-  var savedTime = parseFloat(sessionStorage.getItem("gs_audio_time") || "0");
-  var shouldPlay = sessionStorage.getItem("gs_audio_playing") === "true";
-
-  var currentIndex = isNaN(savedIndex) ? 0 : savedIndex;
-  var audio = new Audio();
-
-  function loadTrack(index) {
-    currentIndex = index;
-    audio.src = playlist[currentIndex].src;
-    trackEl.textContent = playlist[currentIndex].name;
-    sessionStorage.setItem("gs_audio_index", String(currentIndex));
-  }
-
-  loadTrack(currentIndex);
-  audio.currentTime = isNaN(savedTime) ? 0 : savedTime;
-
-  function playAudio() {
-    audio.play().then(function () {
-      toggleEl.textContent = "⏸";
-      sessionStorage.setItem("gs_audio_playing", "true");
-    }).catch(function (err) {
-      console.warn("Autoplay prevented by browser policy until user interacts.");
+    function pauseAudio() {
+      audio.pause();
       toggleEl.textContent = "▶";
       sessionStorage.setItem("gs_audio_playing", "false");
-    });
-  }
-
-  function pauseAudio() {
-    audio.pause();
-    toggleEl.textContent = "▶";
-    sessionStorage.setItem("gs_audio_playing", "false");
-  }
-
-  // 2. Save current timestamp periodically & before unloading page
-  window.addEventListener("beforeunload", function () {
-    sessionStorage.setItem("gs_audio_time", String(audio.currentTime));
-  });
-
-  // 3. User toggle handling
-  transportEl.addEventListener("click", function () {
-    if (!audio.paused) {
-      pauseAudio();
-    } else {
-      playAudio();
     }
-  });
 
-  // 4. Auto-advance track on end
-  audio.addEventListener("ended", function () {
-    currentIndex = (currentIndex + 1) % playlist.length;
-    sessionStorage.setItem("gs_audio_time", "0");
-    loadTrack(currentIndex);
-    playAudio();
-  });
+    // Save timestamp right before navigating away
+    window.addEventListener("beforeunload", function () {
+      sessionStorage.setItem("gs_audio_time", String(audio.currentTime));
+    });
 
-  // 5. Attempt initial load playback / enable on first user click if blocked
-  if (shouldPlay || sessionStorage.getItem("gs_audio_visited") === null) {
-    sessionStorage.setItem("gs_audio_visited", "true");
-    playAudio();
-
-    // If browser blocks autoplay on fresh land, start sound on the user's very first click anywhere on site
-    var enableOnFirstInteraction = function () {
-      if (audio.paused && sessionStorage.getItem("gs_audio_playing") !== "false") {
+    // Toggle playback on transport click
+    transportEl.addEventListener("click", function () {
+      if (!audio.paused) {
+        pauseAudio();
+      } else {
         playAudio();
       }
-      document.removeEventListener("click", enableOnFirstInteraction);
-    };
-    document.addEventListener("click", enableOnFirstInteraction, { once: true });
-  }
-})();
+    });
+
+    // Auto-advance playlist on end
+    audio.addEventListener("ended", function () {
+      currentIndex = (currentIndex + 1) % playlist.length;
+      sessionStorage.setItem("gs_audio_time", "0");
+      loadTrack(currentIndex);
+      playAudio();
+    });
+
+    // Start playing immediately or unlock on the first click anywhere
+    if (shouldPlay) {
+      playAudio();
+
+      var enableOnFirstClick = function () {
+        if (audio.paused && sessionStorage.getItem("gs_audio_playing") !== "false") {
+          playAudio();
+        }
+        document.removeEventListener("click", enableOnFirstClick);
+      };
+      document.addEventListener("click", enableOnFirstClick, { once: true });
+    }
+  })();
 
   /* ---- visitor counter: per-browser kitsch, not a real metric ---- */
   var count = 6661;
