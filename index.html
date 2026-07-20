@@ -174,8 +174,12 @@
     ap.className = "about-photo"; ap.src = about.photo; ap.alt = "the keeper";
     photoHost.appendChild(ap);
   } else {
-    var ph = GS.el("div", "stripe-img about-photo", "photo: site owner");
-    photoHost.appendChild(ph);
+    // Replaced placeholder stripe box with your local art file
+    var ap = document.createElement("img");
+    ap.className = "about-photo";
+    ap.src = "assets/art/scream funny.jpg";
+    ap.alt = "the keeper";
+    photoHost.appendChild(ap);
   }
 
   /* ---- friends list ---- */
