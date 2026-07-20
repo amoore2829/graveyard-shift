@@ -44,6 +44,18 @@ jobs:
           rm -rf _site/.github
           rm -f _site/.gitignore _site/.gitattributes
 
+          # Stamp assets with this commit so browsers can never pair fresh
+          # HTML with a stale cached gs.js. Pages serves assets with
+          # max-age=600, which is long enough to hand someone a blank page.
+          VER="${GITHUB_SHA:0:8}"
+          find _site -name '*.html' -print0 | xargs -0 sed -i "s/?v=dev/?v=${VER}/g"
+          echo "stamped assets with ?v=${VER}"
+
+          if grep -rq '?v=dev' _site --include='*.html'; then
+            echo "::error::some asset references were not stamped"
+            exit 1
+          fi
+
       - name: Fail if any keeper file slipped through
         run: |
           set -euo pipefail

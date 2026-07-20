@@ -366,6 +366,9 @@ window.GS = (function () {
     opts = opts || {};
     var host = document.getElementById("gs-shell");
     if (!host) return;
+    /* clears the static "did not finish loading" fallback baked into the
+       markup — if we got here, the runtime is alive */
+    host.textContent = "";
 
     if (usingDrafts) {
       var warn = el("div", "preview-bar",
