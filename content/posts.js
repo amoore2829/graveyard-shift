@@ -31,12 +31,28 @@
 
    type: "pick"    — creepypasta you didn't write but love
      source: {
-       author: "Ted the Caver",
+       author: "u/Maliagirl1314",
        url:    "https://..."             // credit the original. always.
      }
+     body is optional on picks — leave it empty for a plain
+     recommendation, or add a line or two on why you love it.
 
    type: "post"    — freeform essay. no extra fields.
 
    ============================================================ */
 
-window.GS_POSTS = [];
+window.GS_POSTS = [
+  {
+    "id": "2026-07-19-my-wife-has-been-peeking-at-me",
+    "type": "pick",
+    "cat": "creepypasta",
+    "title": "My wife has been peeking at me from around corners and behind furniture",
+    "date": "2026-07-19",
+    "source": {
+      "author": "u/Maliagirl1314",
+      "url": "https://www.reddit.com/r/nosleep/comments/sva7z6/my_wife_has_been_peeking_at_me_from_around/"
+    },
+    "body": "",
+    "draft": false
+  }
+];

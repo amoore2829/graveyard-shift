@@ -29,29 +29,41 @@ jobs:
 
       - name: Assemble the public site
         run: |
+          set -euo pipefail
           mkdir -p _site
-          cp -r . _site/staging
-          rm -rf _site/staging/.git _site/staging/.github _site/staging/_site
+          # Build from git rather than the working tree: only committed files can
+          # ship, and there's no way to recurse into the destination.
+          git archive HEAD | tar -x -C _site
 
-          # keeper-only files never reach the public site
-          rm -f _site/staging/admin.html
-          rm -f _site/staging/assets/admin-core.js
+          # keeper-only tools — authoring happens locally, never on the live site
+          rm -f _site/admin.html
+          rm -f _site/assets/admin-core.js
 
-          # design source material isn't part of the site
-          rm -rf "_site/staging/Campy Horror Blog Design"
-
-          mv _site/staging/* _site/ 2>/dev/null || true
-          mv _site/staging/.nojekyll _site/ 2>/dev/null || true
-          rm -rf _site/staging
+          # not part of the site
+          rm -rf "_site/Campy Horror Blog Design"
+          rm -rf _site/.github
+          rm -f _site/.gitignore _site/.gitattributes
 
       - name: Fail if any keeper file slipped through
         run: |
-          if [ -e _site/admin.html ] || [ -e _site/assets/admin-core.js ]; then
-            echo "::error::admin files present in the deploy artifact"
-            exit 1
-          fi
+          set -euo pipefail
+          fail=0
+          for f in admin.html assets/admin-core.js; do
+            if [ -e "_site/$f" ]; then
+              echo "::error::$f is present in the deploy artifact"
+              fail=1
+            fi
+          done
+          # the site is broken if these are missing, so catch it before it ships
+          for f in index.html assets/gs.js assets/gs.css content/posts.js content/site.js .nojekyll; do
+            if [ ! -e "_site/$f" ]; then
+              echo "::error::$f is MISSING from the deploy artifact"
+              fail=1
+            fi
+          done
           echo "Publishing:"
           find _site -type f | sort
+          exit $fail
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -136,7 +136,13 @@
     var errors = [], warnings = [];
 
     if (!post.title) errors.push("A tale needs a title.");
-    if (!post.body)  errors.push("A tale needs a body.");
+
+    /* Picks can be a bare recommendation — title, author, link, done.
+       Your own writing still has to actually contain writing. */
+    if (!post.body) {
+      if (post.type === "pick") warnings.push("No note — this will list as a plain recommendation.");
+      else errors.push("A tale needs a body.");
+    }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(post.date)) errors.push("Date must look like 2026-07-19.");
 
     if (post.type === "review") {

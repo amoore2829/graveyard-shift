@@ -198,6 +198,18 @@ window.GS = (function () {
     meta.appendChild(el("span", null, fmtDate(post.date)));
     meta.appendChild(link("category.html?cat=" + encodeURIComponent(String(post.cat || "").toLowerCase()),
                           post.cat, null));
+
+    /* A pick is a recommendation — let people go straight to the story
+       instead of forcing a click through a page that just points elsewhere. */
+    if (post.type === "pick" && post.source) {
+      var src = safeUrl(post.source.url);
+      if (src) {
+        var out = link(src, "read it ↗");
+        out.target = "_blank";
+        out.rel = "noopener noreferrer";
+        meta.appendChild(out);
+      }
+    }
     main.appendChild(meta);
 
     wrap.appendChild(main);
