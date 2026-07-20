@@ -45,7 +45,7 @@ window.GS = (function () {
       sub:   "the calendar's two best holidays",
       subs:  {
         "halloween":  { title: "HALLOWEEN",  sub: "october's own" },
-        "summerween": { title: "SUMMERWEEN", sub: "june 22nd. bring your own watermelon." }
+        "summerween": { title: "SUMMERWEEN", sub: "all august. bring your own watermelon." }
       }
     }
   };
@@ -88,6 +88,28 @@ window.GS = (function () {
 
   var isLocal = location.protocol === "file:" ||
                 /^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname);
+
+  /* Stamped with the commit sha at deploy time; stays "dev" in the repo. */
+  var BUILD = "dev";
+
+  /* Pages caches HTML and assets for 10 minutes, so a browser can sit on a
+     complete, internally-consistent copy of an older release and have no way
+     to know. version.txt is fetched with cache defeated: if it disagrees with
+     the build this script came from, the page you're reading is stale. */
+  function checkFreshness() {
+    if (isLocal || BUILD === "dev" || typeof fetch !== "function") return;
+    fetch("version.txt?cb=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (latest) {
+        if (!latest) return;
+        if (latest.trim() === BUILD) return;
+        var bar = el("div", "stale-bar");
+        bar.textContent = "A newer version of this site is available. Click here to load it.";
+        bar.addEventListener("click", function () { location.reload(true); });
+        if (document.body) document.body.insertBefore(bar, document.body.firstChild);
+      })
+      .catch(function () { /* offline or version.txt missing — say nothing */ });
+  }
 
   var usingDrafts = false;
 
@@ -419,6 +441,7 @@ window.GS = (function () {
     posts();       /* primes usingDrafts before the shell renders */
     shell(opts);
     footer();
+    checkFreshness();
   }
 
   return {

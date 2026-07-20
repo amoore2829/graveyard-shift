@@ -77,6 +77,12 @@ nav a.here{color:var(--secondary);border-bottom:1px solid var(--secondary)}
 
 footer{text-align:center;padding:16px;color:var(--muted-3);font-size:11px;border-top:1px solid var(--edge-dim)}
 
+/* ---- stale-cache notice ----
+   Injected by gs.js when the page it's running in is older than what the
+   server is serving. Clicking reloads. */
+.stale-bar{position:sticky;top:0;z-index:99;background:#1a1400;border-bottom:2px solid #ffb700;color:#ffb700;font:13px/1.6 'Courier Prime',monospace;padding:12px 14px;text-align:center;cursor:pointer}
+.stale-bar:hover{background:#241c00}
+
 /* ---- boot fallback ----
    Sits in the markup and is cleared by gs.js once the runtime starts.
    If you can see this on a live page, a script failed to load. */

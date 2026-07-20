@@ -49,10 +49,19 @@ jobs:
           # max-age=600, which is long enough to hand someone a blank page.
           VER="${GITHUB_SHA:0:8}"
           find _site -name '*.html' -print0 | xargs -0 sed -i "s/?v=dev/?v=${VER}/g"
-          echo "stamped assets with ?v=${VER}"
+
+          # gs.js compares its own build against version.txt so a page served
+          # entirely from cache can still notice it's out of date.
+          sed -i "s/var BUILD = \"dev\";/var BUILD = \"${VER}\";/" _site/assets/gs.js
+          printf '%s' "${VER}" > _site/version.txt
+          echo "stamped build ${VER}"
 
           if grep -rq '?v=dev' _site --include='*.html'; then
             echo "::error::some asset references were not stamped"
+            exit 1
+          fi
+          if grep -q 'var BUILD = "dev";' _site/assets/gs.js; then
+            echo "::error::gs.js build version was not stamped"
             exit 1
           fi
 
