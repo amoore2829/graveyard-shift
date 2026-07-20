@@ -194,9 +194,8 @@
   $("construction-label").textContent =
     GS.THEME.icon + " " + GS.THEME.construction + " " + GS.THEME.icon;
 
- /* ---- Audio / MIDI Player Integration ---- */
-(function setupAudioPlayer() {
-  // Playlist pointing to your MP3 files in assets/music/
+ /* ---- Cross-Page Continuous Audio Player ---- */
+(function setupContinuousAudio() {
   var playlist = [
     {
       name: "Toccata and Fugue in D Minor.mp3",
@@ -208,45 +207,84 @@
     }
   ];
 
-  var currentIndex = 0;
-  var playing = false;
-  var audio = new Audio();
-
+  var $ = function (id) { return document.getElementById(id); };
   var trackEl = $("midi-track");
   var transportEl = $("midi-transport");
   var toggleEl = $("midi-toggle");
 
+  if (!trackEl || !transportEl || !toggleEl) return;
+
+  // 1. Restore previous audio state or start fresh
+  var savedIndex = parseInt(sessionStorage.getItem("gs_audio_index") || "0", 10);
+  var savedTime = parseFloat(sessionStorage.getItem("gs_audio_time") || "0");
+  var shouldPlay = sessionStorage.getItem("gs_audio_playing") === "true";
+
+  var currentIndex = isNaN(savedIndex) ? 0 : savedIndex;
+  var audio = new Audio();
+
   function loadTrack(index) {
-    var track = playlist[index];
-    audio.src = track.src;
-    trackEl.textContent = track.name;
+    currentIndex = index;
+    audio.src = playlist[currentIndex].src;
+    trackEl.textContent = playlist[currentIndex].name;
+    sessionStorage.setItem("gs_audio_index", String(currentIndex));
   }
 
-  // Load initial track name and audio source
   loadTrack(currentIndex);
+  audio.currentTime = isNaN(savedTime) ? 0 : savedTime;
 
-  // Play / Pause toggle on click
-  transportEl.addEventListener("click", function () {
-    if (playing) {
-      audio.pause();
-      playing = false;
+  function playAudio() {
+    audio.play().then(function () {
+      toggleEl.textContent = "⏸";
+      sessionStorage.setItem("gs_audio_playing", "true");
+    }).catch(function (err) {
+      console.warn("Autoplay prevented by browser policy until user interacts.");
       toggleEl.textContent = "▶";
+      sessionStorage.setItem("gs_audio_playing", "false");
+    });
+  }
+
+  function pauseAudio() {
+    audio.pause();
+    toggleEl.textContent = "▶";
+    sessionStorage.setItem("gs_audio_playing", "false");
+  }
+
+  // 2. Save current timestamp periodically & before unloading page
+  window.addEventListener("beforeunload", function () {
+    sessionStorage.setItem("gs_audio_time", String(audio.currentTime));
+  });
+
+  // 3. User toggle handling
+  transportEl.addEventListener("click", function () {
+    if (!audio.paused) {
+      pauseAudio();
     } else {
-      audio.play().then(function() {
-        playing = true;
-        toggleEl.textContent = "⏸";
-      }).catch(function(err) {
-        console.warn("Playback blocked or failed:", err);
-      });
+      playAudio();
     }
   });
 
-  // Auto-advance to next track when finished
+  // 4. Auto-advance track on end
   audio.addEventListener("ended", function () {
     currentIndex = (currentIndex + 1) % playlist.length;
+    sessionStorage.setItem("gs_audio_time", "0");
     loadTrack(currentIndex);
-    audio.play();
+    playAudio();
   });
+
+  // 5. Attempt initial load playback / enable on first user click if blocked
+  if (shouldPlay || sessionStorage.getItem("gs_audio_visited") === null) {
+    sessionStorage.setItem("gs_audio_visited", "true");
+    playAudio();
+
+    // If browser blocks autoplay on fresh land, start sound on the user's very first click anywhere on site
+    var enableOnFirstInteraction = function () {
+      if (audio.paused && sessionStorage.getItem("gs_audio_playing") !== "false") {
+        playAudio();
+      }
+      document.removeEventListener("click", enableOnFirstInteraction);
+    };
+    document.addEventListener("click", enableOnFirstInteraction, { once: true });
+  }
 })();
 
   /* ---- visitor counter: per-browser kitsch, not a real metric ---- */
