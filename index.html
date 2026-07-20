@@ -194,13 +194,60 @@
   $("construction-label").textContent =
     GS.THEME.icon + " " + GS.THEME.construction + " " + GS.THEME.icon;
 
-  /* ---- midi flavor (visual only — no audio wired up) ---- */
-  $("midi-track").textContent = SITE.midi || "dead_hallway.mid";
-  var playing = false, toggle = $("midi-toggle");
-  $("midi-transport").addEventListener("click", function () {
-    playing = !playing;
-    toggle.textContent = playing ? "⏸" : "▶";
+ /* ---- Audio / MIDI Player Integration ---- */
+(function setupAudioPlayer() {
+  // Playlist pointing to your MP3 files in assets/music/
+  var playlist = [
+    {
+      name: "Toccata and Fugue in D Minor.mp3",
+      src: "assets/music/Toccata and Fugue in D Minor, BWV 565.mp3"
+    },
+    {
+      name: "Monster Mash.mp3",
+      src: "assets/music/Monster Mash - Monster Mash.mp3"
+    }
+  ];
+
+  var currentIndex = 0;
+  var playing = false;
+  var audio = new Audio();
+
+  var trackEl = $("midi-track");
+  var transportEl = $("midi-transport");
+  var toggleEl = $("midi-toggle");
+
+  function loadTrack(index) {
+    var track = playlist[index];
+    audio.src = track.src;
+    trackEl.textContent = track.name;
+  }
+
+  // Load initial track name and audio source
+  loadTrack(currentIndex);
+
+  // Play / Pause toggle on click
+  transportEl.addEventListener("click", function () {
+    if (playing) {
+      audio.pause();
+      playing = false;
+      toggleEl.textContent = "▶";
+    } else {
+      audio.play().then(function() {
+        playing = true;
+        toggleEl.textContent = "⏸";
+      }).catch(function(err) {
+        console.warn("Playback blocked or failed:", err);
+      });
+    }
   });
+
+  // Auto-advance to next track when finished
+  audio.addEventListener("ended", function () {
+    currentIndex = (currentIndex + 1) % playlist.length;
+    loadTrack(currentIndex);
+    audio.play();
+  });
+})();
 
   /* ---- visitor counter: per-browser kitsch, not a real metric ---- */
   var count = 6661;
