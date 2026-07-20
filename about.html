@@ -65,17 +65,13 @@
   $("about-title").textContent = "◆ " + (about.heading || "ABOUT THE KEEPER") + " ◆";
   GS.paragraphs(about.bio, $("about-bio"));
 
-  /* ---- portrait ---- */
-  if (about.photo) {
-    var img = document.createElement("img");
-    img.src = about.photo; img.alt = "the keeper";
-    img.style.cssText = "width:160px;height:160px;object-fit:cover;flex:none";
-    $("about-photo").appendChild(img);
-  } else {
-    var ph = GS.el("div", "stripe-img", "photo:\nsite owner");
-    ph.style.cssText = "width:160px;height:160px;flex:none;white-space:pre-line";
-    $("about-photo").appendChild(ph);
-  }
+ /* ---- portrait ---- */
+  var photoHost = $("about-photo");
+  var img = document.createElement("img");
+  img.src = about.photo || "assets/art/scream funny.jpg";
+  img.alt = "the keeper";
+  img.style.cssText = "width:160px;height:160px;object-fit:cover;flex:none";
+  photoHost.appendChild(img);
 
   /* ---- ledger stats ---- */
   var reviews = posts.filter(function (p) { return p.type === "review" && p.work; });
@@ -140,7 +136,7 @@
     });
   } else {
     host.appendChild(GS.el("div", "gb-empty",
-      "No links yet — add them to the `links` list in content/site.js."));
+      "No links yet"));
   }
 })();
 </script>
